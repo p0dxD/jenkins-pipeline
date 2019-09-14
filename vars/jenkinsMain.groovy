@@ -1,10 +1,12 @@
 def call(){
 pipeline {
-    agent { docker { image 'node:6.3' } }
+    agent { label "docker.ci.jenkins"}
     stages {
         stage('build') {
             steps {
-                sh 'npm --version'
+                script {
+                    sh 'go version'
+                }
             }
         }
     }
