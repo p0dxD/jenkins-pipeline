@@ -5,7 +5,7 @@ pipeline {
         stage('build') {
             steps {
                 script {
-                    echo $JOB_NAME 
+                    echo env.JOB_NAME
                     sh "mkdir -p $GOPATH/src/${env.JOB_NAME}"
                     sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
                     sh 'go get ./...'
