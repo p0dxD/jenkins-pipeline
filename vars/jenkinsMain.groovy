@@ -5,6 +5,7 @@ pipeline {
         stage('build') {
             steps {
                 script {
+                    sh 'go get ./...'
                     sh 'go build -o subway'
                     stash "workspace"
                 }
