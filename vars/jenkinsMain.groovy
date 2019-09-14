@@ -1,6 +1,6 @@
 def call(){
 pipeline {
-    agent { label "docker.ci.jenkins"}
+    agent { label "builder.ci.jenkins"}
     stages {
         stage('build') {
             steps {
