@@ -5,7 +5,16 @@ pipeline {
         stage('build') {
             steps {
                 script {
-                    sh 'go version'
+                    sh 'go build -o subway'
+                    stash "workspace"
+                }
+            }
+        }
+        stage('Create image') {
+            steps {
+                script {
+                    unstash "workspace"
+                    sh './docker/dockerize.sh'
                 }
             }
         }
