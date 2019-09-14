@@ -6,8 +6,8 @@ pipeline {
             steps {
                 script {
                     echo $JOB_NAME 
-                    sh "mkdir -p $GOPATH/src/$JOB_NAME"
-                    sh "ln -s $WORKSPACE $GOPATH/src/$JOB_NAME"
+                    sh "mkdir -p $GOPATH/src/${env.JOB_NAME}"
+                    sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
                     sh 'go get ./...'
                     sh 'go build -o subway'
                     stash "workspace"
