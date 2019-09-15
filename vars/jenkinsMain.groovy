@@ -18,7 +18,7 @@ pipeline {
                 script {
                     cleanWs()
                     unstash "workspace"
-                    echo env.JOB_NAME
+                    echo scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
                     sh "mkdir -p $GOPATH/src/${env.JOB_NAME} && (ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME} || true) && go get subway && echo $GOPATH &&go build -o subway"
                     // sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
                     // sh 'go build -o subway'
