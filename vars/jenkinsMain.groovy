@@ -36,8 +36,9 @@ pipeline {
                 sh "mkdir src bin && go get ./..."
                 env.PATH="${env.GOPATH}/bin:$PATH"
                 String repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
-
-                sh 'go build -o subway'
+                sh "go get -d ./pkg/..."
+                sh "go install"
+                sh 'go build -o subway main.go'
             
                 stash "workspace"
             }
