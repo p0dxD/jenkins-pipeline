@@ -17,6 +17,7 @@ pipeline {
             steps {
                 script {
                     cleanWs()
+                    unstash "workspace"
                     // echo env.JOB_NAME
                     // sh "mkdir -p $GOPATH/src/${env.JOB_NAME}"
                     // sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
