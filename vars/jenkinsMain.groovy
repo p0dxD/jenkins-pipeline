@@ -20,7 +20,8 @@ pipeline {
                     unstash "workspace"
                     String repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
                     echo scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
-                    sh "mkdir -p $GOPATH/src/${repoName} && (ln -s $WORKSPACE $GOPATH/src/${repoName} || true) && go get subway && echo $GOPATH &&go build -o subway"
+                    echo "WORSPACE: $WORKSPACE"
+                    sh "mkdir -p $GOPATH/src/${repoName} && (ln -s $WORKSPACE $GOPATH/src/${repoName} || true) && go get subway && echo $GOPATH && go build -o subway"
                     // sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
                     // sh 'go build -o subway'
                     stash "workspace"
