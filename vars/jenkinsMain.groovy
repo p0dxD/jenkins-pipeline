@@ -18,11 +18,11 @@ pipeline {
                 script {
                     cleanWs()
                     unstash "workspace"
-                     def resourceContent = libraryResource("scripts/post-checkout.sh")
-                     echo "Contents: $resourceContent"
-                    // sh "bash post-checkout.sh"
-
-                    error "Finishing early"
+                    def resourceContent = libraryResource("scripts/post-checkout.sh")
+                    writeFile(file: "post-checkout.sh", text: resourceContent)
+                    echo "Contents: $resourceContent"
+                    sh "bash post-checkout.sh"
+                    stash "workspace"
                 }
             }
         }
