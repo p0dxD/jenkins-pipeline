@@ -1,8 +1,9 @@
 def call(){
 pipeline {
-    agent { label "builder.ci.jenkins"}
+    agent { label none}
     stages {
         stage('build') {
+                agent { label "builder.ci.jenkins"}
             steps {
                 script {
                     // echo env.JOB_NAME
@@ -14,6 +15,7 @@ pipeline {
             }
         }
         stage('Create image') {
+                agent { label "builder.ci.jenkins"}
             steps {
                 script {
                     unstash "workspace"
