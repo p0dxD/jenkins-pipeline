@@ -19,7 +19,7 @@ pipeline {
                     cleanWs()
                     unstash "workspace"
                     echo env.JOB_NAME
-                    sh "mkdir -p $GOPATH/src/${env.JOB_NAME} && ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME} && go build -o subway"
+                    sh "mkdir -p $GOPATH/src/${env.JOB_NAME} && ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME} && echo $GOPATH &&go build -o subway"
                     // sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
                     // sh 'go build -o subway'
                     stash "workspace"
