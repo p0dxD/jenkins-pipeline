@@ -20,11 +20,7 @@ pipeline {
                     unstash "workspace"
                     def resourceContent = libraryResource("scripts/post-checkout.sh")
                     writeFile(file: "post-checkout.sh", text: resourceContent)
-                    echo "Contents: $resourceContent"
-                    sh "ls"
                     sh "bash post-checkout.sh"
-                    sh "cat static/index.html"
-                    sh "cat /home/.secrets"
                     stash "workspace"
                 }
             }

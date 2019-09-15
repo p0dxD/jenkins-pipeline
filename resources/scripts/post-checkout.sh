@@ -7,7 +7,7 @@
  	do 
 		variable=$(echo "$LINE" | cut -f2 -d" " | cut -f1 -d"=")
 		value=$(echo "$LINE" | cut -f2 -d" " | cut -f2 -d"="| tr -d '"')
- 		if [ -z hide ]; then
+ 		if [ ! -z hide ]; then
 			sed -i -- "s/$variable/$value/g" $FILE_NAME
 		else
 			sed -i -- "s/$value/$variable/g" $FILE_NAME
