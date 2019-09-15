@@ -12,6 +12,6 @@
 		else
 			sed -i -- "s/$value/$variable/g" $FILE_NAME
 		fi
-	done < ~/.secrets
+	done < /home/.secrets
  done < <(find . -not \( -path ./.git -prune \) -type f -follow -print)
  
