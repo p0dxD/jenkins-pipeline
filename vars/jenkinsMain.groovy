@@ -1,6 +1,6 @@
 def call(){
 pipeline {
-    agent { label none}
+    agent { none}
     stages {
         stage('build') {
                 agent { label "builder.ci.jenkins"}
