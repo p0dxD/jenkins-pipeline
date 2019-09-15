@@ -19,6 +19,7 @@ pipeline {
             steps {
                 script {
                     unstash "workspace"
+                    sh "cat ./docker/dockerize.sh"
                     sh './docker/dockerize.sh'
                 }
             }
