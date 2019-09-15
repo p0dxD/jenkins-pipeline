@@ -6,7 +6,7 @@ pipeline {
                 agent { label "builder.ci.jenkins"}
             steps {
                 script {
-                    clearWs()
+                    cleanWs()
                     // echo env.JOB_NAME
                     // sh "mkdir -p $GOPATH/src/${env.JOB_NAME}"
                     // sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
@@ -19,7 +19,7 @@ pipeline {
                 agent { label "builder.ci.jenkins"}
             steps {
                 script {
-                    clearWs()
+                    cleanWs()
                     unstash "workspace"
                     sh "cat ./docker/dockerize.sh"
                     sh './docker/dockerize.sh'
