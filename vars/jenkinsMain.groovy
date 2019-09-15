@@ -19,8 +19,8 @@ pipeline {
                     cleanWs()
                     unstash "workspace"
                     
-            withEnv(["GOPATH=$WORKSPACE"]) {
-                sh "mkdir src && go get ./..."
+            withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
+                sh "mkdir src bin && go get ./..."
                 env.PATH="${env.GOPATH}/bin:$PATH"
                     String repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
                     // echo scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
