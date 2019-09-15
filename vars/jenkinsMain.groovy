@@ -12,6 +12,20 @@ pipeline {
                 }
             }
         }
+        stage('Post Chechout') {
+                agent { label "builder.ci.jenkins"}
+            steps {
+                script {
+                    cleanWs()
+                    unstash "workspace"
+                     def resourceContent = libraryResource("scripts/post-checkout.sh")
+                     echo "Contents: $resourceContent"
+                    // sh "bash post-checkout.sh"
+
+                    error "Finishing early"
+                }
+            }
+        }
         stage('build') {
                 agent { label "builder.ci.jenkins"}
             steps {
@@ -22,14 +36,11 @@ pipeline {
             withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
                 sh "mkdir src bin && go get ./..."
                 env.PATH="${env.GOPATH}/bin:$PATH"
-                    String repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
-                    // echo scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
-                    // echo "WORSPACE: $WORKSPACE"
-                    // sh "mkdir -p $GOPATH/src/${repoName} && (ln -s $WORKSPACE $GOPATH/src/${repoName} || true) && go get subway && echo $GOPATH && go build -o subway"
-                    // sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
-                    sh 'go build -o subway'
+                String repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+
+                sh 'go build -o subway'
             
-                    stash "workspace"
+                stash "workspace"
             }
                 }
             }
