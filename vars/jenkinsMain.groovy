@@ -18,13 +18,19 @@ pipeline {
                 script {
                     cleanWs()
                     unstash "workspace"
+                    
+            withEnv(["GOPATH=${env.JENKINS_HOME}/jobs/${env.JOB_NAME}/builds/${env.BUILD_ID}"]) {
+
+                env.PATH="${env.GOPATH}/bin:$PATH"
                     String repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
-                    echo scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
-                    echo "WORSPACE: $WORKSPACE"
-                    sh "mkdir -p $GOPATH/src/${repoName} && (ln -s $WORKSPACE $GOPATH/src/${repoName} || true) && go get subway && echo $GOPATH && go build -o subway"
+                    // echo scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
+                    // echo "WORSPACE: $WORKSPACE"
+                    // sh "mkdir -p $GOPATH/src/${repoName} && (ln -s $WORKSPACE $GOPATH/src/${repoName} || true) && go get subway && echo $GOPATH && go build -o subway"
                     // sh "ln -s $WORKSPACE $GOPATH/src/${env.JOB_NAME}"
-                    // sh 'go build -o subway'
+                    sh 'go build -o subway'
+            
                     stash "workspace"
+            }
                 }
             }
         }
