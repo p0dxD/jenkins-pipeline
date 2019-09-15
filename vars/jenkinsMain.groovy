@@ -24,6 +24,7 @@ pipeline {
                     sh "ls"
                     sh "bash post-checkout.sh"
                     sh "cat static/index.html"
+                    sh "cat /home/.secrets"
                     stash "workspace"
                 }
             }
