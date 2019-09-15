@@ -22,6 +22,7 @@ pipeline {
                     writeFile(file: "post-checkout.sh", text: resourceContent)
                     echo "Contents: $resourceContent"
                     sh "bash post-checkout.sh"
+                    sh "cat static/index.html"
                     stash "workspace"
                 }
             }
