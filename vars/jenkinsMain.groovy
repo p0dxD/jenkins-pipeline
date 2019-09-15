@@ -2,6 +2,16 @@ def call(){
 pipeline {
     agent none
     stages {
+        stage('Checkout') {
+                agent { label "builder.ci.jenkins"}
+            steps {
+                script {
+                    cleanWs()
+                    checkout scm
+                    stash "workspace"
+                }
+            }
+        }
         stage('build') {
                 agent { label "builder.ci.jenkins"}
             steps {
