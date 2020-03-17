@@ -1,6 +1,6 @@
 import space.joserod.configs.*
 def call(){
-    // Config configs;
+    Step configs;
     pipeline {
         agent none
         stages {
@@ -33,7 +33,6 @@ def call(){
                     script {
                         cleanWs()
                         unstash "workspace"
-                         Config configs = new Config()
                         build(configs)
                         error "Unstable, exiting now..."
                         withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
