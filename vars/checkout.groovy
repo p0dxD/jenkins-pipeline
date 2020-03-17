@@ -1,6 +1,6 @@
 import space.joserod.configs.Config
 
-def call(Config configs) {
+def call(space.joserod.configs.Config configs) {
     // cleanWs()
     // checkout scm 
     sh 'ls -la'
