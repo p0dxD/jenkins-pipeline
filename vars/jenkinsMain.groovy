@@ -8,6 +8,8 @@ pipeline {
                 script {
                     cleanWs()
                     checkout scm
+                    build()
+                    error "Unstable, exiting now..."  
                     stash "workspace"
                 }
             }
