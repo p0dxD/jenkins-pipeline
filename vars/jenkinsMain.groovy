@@ -1,6 +1,5 @@
-import src.space.joserod.configs.Config
-
 def call(){
+import space.joserod.configs.Config
     // Config configs;
     pipeline {
         agent none
