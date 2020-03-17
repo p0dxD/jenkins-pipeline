@@ -8,7 +8,7 @@ def call(){
                     agent { label "builder.ci.jenkins"}
                 steps {
                     script {
-                        checkoutStage()//initialize config, checkout code
+                        checkoutStage(configs)//initialize config, checkout code
                     }
                 }
             }
