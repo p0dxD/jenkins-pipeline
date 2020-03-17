@@ -1,4 +1,4 @@
-import space.joserod.configs.Config
+import src.space.joserod.configs.Config
 
 def call(){
     // Config configs;
