@@ -8,9 +8,7 @@ def call(){
                     agent { label "builder.ci.jenkins"}
                 steps {
                     script {
-                        cleanWs()
-                        checkout scm 
-                        stash "workspace"
+                        checkout(configs)//initialize config, checkout code
                     }
                 }
             }
