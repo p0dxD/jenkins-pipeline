@@ -33,7 +33,7 @@ def call(){
                     script {
                         cleanWs()
                         unstash "workspace"
-                        
+                         Config configs = new Config()
                         build(configs)
                         error "Unstable, exiting now..."
                         withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
