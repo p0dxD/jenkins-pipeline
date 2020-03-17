@@ -1,7 +1,7 @@
-import space.joserod.configs.*;
+import space.joserod.configs.Config;
 
 def call(){
-    Config configs;
+    // Config configs;
     pipeline {
         agent none
         stages {
