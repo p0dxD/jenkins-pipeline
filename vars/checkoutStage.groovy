@@ -4,7 +4,6 @@ def call(PipelineManager pipelineManager) {
     cleanWs()
     checkout scm 
     fillconfiguration(pipelineManager)
-    error("Finishing early testing...")
     stash "workspace"
 }
 
