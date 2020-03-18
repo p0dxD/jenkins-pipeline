@@ -5,7 +5,7 @@ import space.joserod.projects.*
 
 public class Config {
     private HashMap<String, ProjectConfiguration> projects;
-    private static Config something = new Config();
+    private static Config config = new Config();
 
     private Config() {
         projects = new HashMap<>()
@@ -13,7 +13,7 @@ public class Config {
 
    //Get the only object available
    public static Config getInstance(){
-      return something;
+      return config;
    }
 
     public void addProject(String name, String values) {
