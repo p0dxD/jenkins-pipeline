@@ -6,6 +6,12 @@ import space.joserod.configs.Config
 def call(Config configs) {
     cleanWs()
     checkout scm 
+    fillconfiguration()
+    error "Unstable, exiting now..."
+    stash "workspace"
+}
+
+private void fillconfiguration() {
     //Read configuration
     LinkedHashMap datas = readYaml file: 'configuration.yml'
 
@@ -22,6 +28,4 @@ def call(Config configs) {
         }
     }
     configs.getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
-    error "Unstable, exiting now..."
-    stash "workspace"
 }
