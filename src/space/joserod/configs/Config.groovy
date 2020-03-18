@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import space.joserod.*
 
 public class Config {
-    HashMap<String, Project> projects;
+    HashMap<String, ProjectConfiguration> projects;
 
     public Config() {
         this.configuration = configuration
@@ -16,11 +16,11 @@ public class Config {
         project.put(name, tmp)
     }
 
-    public void addProject(String name, Project project) {
+    public void addProject(String name, ProjectConfiguration project) {
         project.put(name, tmp)
     }
 
-    public HashMap<String, Project> getProjects(){
+    public HashMap<String, ProjectConfiguration> getProjects(){
         return this.projects
     }
 }
