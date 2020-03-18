@@ -3,7 +3,7 @@ import space.joserod.pipeline.PipelineManager
 def call(PipelineManager pipelineManager) {
     cleanWs()
     checkout scm 
-    fillconfiguration(pipelineManager)
+    // fillconfiguration(pipelineManager)
     error("Finishing early testing...")
     stash "workspace"
 }
