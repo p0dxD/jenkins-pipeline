@@ -5,7 +5,7 @@ public class ProjectConfiguration {
     String version;
     String values;
 
-    public ProjectConfiguration(String values) {
+    public ProjectConfiguration(LinkedHashMap values) {
         this.name = values.name
         this.version = values.version
         this.values = values
