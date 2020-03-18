@@ -18,11 +18,11 @@ public class Config {
 
     public void addProject(String name, LinkedHashMap values) {
         ProjectConfiguration tmp = new ProjectConfiguration(values)
-        project.put(name, tmp)
+        projects.put(name, tmp)
     }
 
     public void addProject(String name, ProjectConfiguration project) {
-        project.put(name, tmp)
+        projects.put(name, tmp)
     }
 
     public HashMap<String, ProjectConfiguration> getProjects(){
