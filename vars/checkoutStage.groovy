@@ -17,7 +17,7 @@ def call(Config configs) {
            echo "Added project: " + project.name
         }
     }
-    configs.getProjectsConfigs().each{ k, v -> println "${k}:${v}" }
+    configs.getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
     error "Unstable, exiting now..."
     stash "workspace"
 }
