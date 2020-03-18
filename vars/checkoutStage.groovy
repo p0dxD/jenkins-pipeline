@@ -20,14 +20,14 @@ private void fillconfiguration(PipelineManager pipelineManager) {
             String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+ "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
            String changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
            if (changesCmdOutput.equalsIgnoreCase('Has changes.')) {
-            pipelineManager.getConfigs().addProject(project.name, project)
+            pipelineManager.getProjectConfigurations().addProject(project.name, project)
             echo "Added project with changes: " + project.name
            }
         }
     }
-    pipelineManager.getConfigs().getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
+    pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
 
-    if (pipelineManager.getConfigs().getProjectsConfigs().size() == 1) {
+    if (pipelineManager.getProjectConfigurations().getProjectsConfigs().size() == 1) {
         //we exit pipeline there's no changes, why build? unless triggered by hand. 
         currentBuild.result = 'SUCCESS'
         return
