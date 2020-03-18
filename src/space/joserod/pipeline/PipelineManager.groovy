@@ -7,7 +7,7 @@ public class PipelineManager {
     private static PipelineManager pipelineManager = new PipelineManager();
 
     private PipelineManager() {
-        configs = Config.getInstance()
+        // configs = Config.getInstance()
     }
 
    //Get the only object available
