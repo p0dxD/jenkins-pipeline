@@ -1,7 +1,7 @@
 package space.joserod.configs;
 
 import java.util.ArrayList;
-import space.joserod.*
+import space.joserod.project.*
 
 public class Config {
     HashMap<String, ProjectConfiguration> projects;
