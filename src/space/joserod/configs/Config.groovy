@@ -3,10 +3,11 @@ package space.joserod.configs;
 import java.util.ArrayList;
 
 public class Config {
-    Hashmap<String, String> configurations;
+    HashMap<String, String> configurations;
 
     public Config(String configuration) {
-        this.configuration = configuration;
+        this.configuration = configuration
+        configurations = new HashMap<>()
     }
 
     public void init() {
