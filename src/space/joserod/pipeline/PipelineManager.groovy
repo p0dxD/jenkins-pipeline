@@ -7,13 +7,17 @@ public class PipelineManager {
     private static PipelineManager pipelineManager = new PipelineManager();
 
     private PipelineManager() {
-        // configs = Config.getInstance()
     }
 
    //Get the only object available
    public static PipelineManager getInstance(){
+      configs = Config.getInstance()
       return pipelineManager;
    }
+
+    public void init() {
+        configs = Config.getInstance()
+    }
 
    private Config getConfigs() {
        return this.configs
