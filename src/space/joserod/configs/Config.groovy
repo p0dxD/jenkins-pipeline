@@ -16,7 +16,7 @@ public class Config {
       return config;
    }
 
-    public void addProject(String name, String values) {
+    public void addProject(String name, LinkedHashMap values) {
         ProjectConfiguration tmp = new ProjectConfiguration(values)
         project.put(name, tmp)
     }
