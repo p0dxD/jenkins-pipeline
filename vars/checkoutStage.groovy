@@ -29,6 +29,7 @@ private void fillconfiguration(PipelineManager pipelineManager) {
 
     if (pipelineManager.getProjectConfigurations().getProjectsConfigs().size() == 1) {
         //we exit pipeline there's no changes, why build? unless triggered by hand. 
+        echo "We found one."
         currentBuild.result = 'SUCCESS'
         return
     }
