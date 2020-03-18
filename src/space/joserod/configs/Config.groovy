@@ -25,7 +25,7 @@ public class Config {
         projects.put(name, tmp)
     }
 
-    public HashMap<String, ProjectConfiguration> getProjects(){
+    public HashMap<String, ProjectConfiguration> getProjectsConfigs(){
         return this.projects
     }
 }
