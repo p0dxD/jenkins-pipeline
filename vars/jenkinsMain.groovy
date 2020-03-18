@@ -9,6 +9,7 @@ def call(){
                 steps {
                     script {
                         echo "here"
+                        pipelineManager.init()
                         checkoutStage(pipelineManager)//initialize config, checkout code
                     }
                 }

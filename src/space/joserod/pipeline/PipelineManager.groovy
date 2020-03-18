@@ -11,7 +11,6 @@ public class PipelineManager {
 
    //Get the only object available
    public static PipelineManager getInstance(){
-      configs = Config.getInstance()
       return pipelineManager;
    }
 
