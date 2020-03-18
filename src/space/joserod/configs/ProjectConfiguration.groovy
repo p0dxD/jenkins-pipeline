@@ -1,4 +1,4 @@
-package space.joserod.projects;
+package space.joserod.configs
 
 public class ProjectConfiguration {
     String name
