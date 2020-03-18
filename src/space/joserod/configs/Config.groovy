@@ -12,7 +12,7 @@ public class Config {
     }
 
     public void addProject(String name, String values) {
-        Project tmp = new Project(values)
+        ProjectConfiguration tmp = new ProjectConfiguration(values)
         project.put(name, tmp)
     }
 
