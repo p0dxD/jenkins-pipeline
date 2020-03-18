@@ -13,6 +13,8 @@ def call(Config configs) {
         String key = entry.getKey();
         ArrayList<String> value = entry.getValue();
         // now work with key and value...
+        echo "Key:" + key
+        echo "Value:" + value
     }
     sh 'ls -la'
     echo "Dta: ${datas}"
