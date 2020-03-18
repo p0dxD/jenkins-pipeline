@@ -13,9 +13,13 @@ def call(Config configs) {
         String key = entry.getKey();
         ArrayList<String> value = entry.getValue();
         for(String project : value) {
-            sh 'if [ '+"${project.path}"+' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+"${project.path}"+') ]; then echo "Empty"; else echo "Has changes."; fi'
-           configs.addProject(project.name, project)
-           echo "Added project: " + project.name
+            String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '
+                                + "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
+           String changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
+           if (changesCmdOutput.equalsIgnoreCase('Has changes.')) {
+            configs.addProject(project.name, project)
+            echo "Added project with changes: " + project.name
+           }
         }
     }
     configs.getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
