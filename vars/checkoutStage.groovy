@@ -6,22 +6,17 @@ import space.joserod.configs.Config
 def call(Config configs) {
     cleanWs()
     checkout scm 
+    //Read configuration
     LinkedHashMap datas = readYaml file: 'configuration.yml'
-    echo ""+datas.getClass()
 
     for (Map.Entry<String, ArrayList<String>> entry : datas.entrySet()) {
         String key = entry.getKey();
         ArrayList<String> value = entry.getValue();
-        // now work with key and value...
-        echo "Key:" + key
-        echo "Value:" + value
-        for(String name : value)
-        {
-           echo "inside: " + name.name
+        for(String project : value) {
+           addProject(project.name, project)
+           echo "Added project: " + project.name
         }
     }
-    sh 'ls -la'
-    echo "Dta: ${datas}"
     error "Unstable, exiting now..."
     stash "workspace"
 }

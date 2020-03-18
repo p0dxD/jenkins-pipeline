@@ -1,16 +1,26 @@
 package space.joserod.configs;
 
 import java.util.ArrayList;
+import space.joserod.project.Project
 
 public class Config {
-    HashMap<String, String> configurations;
+    HashMap<String, Project> projects;
 
-    public Config(String configuration) {
+    public Config() {
         this.configuration = configuration
-        configurations = new HashMap<>()
+        projects = new HashMap<>()
     }
 
-    public void init() {
-        
+    public void addProject(String name, String values) {
+        Project tmp = new Project(values)
+        project.put(name, tmp)
+    }
+
+    public void addProject(String name, Project project) {
+        project.put(name, tmp)
+    }
+
+    public HashMap<String, Project> getProjects(){
+        return this.projects
     }
 }
