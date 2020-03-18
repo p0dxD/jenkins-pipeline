@@ -1,17 +1,14 @@
 import space.joserod.configs.Config
 
-// import java.util.LinkedHashMap
-// import java.util.Map
-
 def call(Config configs) {
     cleanWs()
     checkout scm 
-    fillconfiguration()
+    fillconfiguration(configs)
     error "Unstable, exiting now..."
     stash "workspace"
 }
 
-private void fillconfiguration() {
+private void fillconfiguration(Config configs) {
     //Read configuration
     LinkedHashMap datas = readYaml file: 'configuration.yml'
 
