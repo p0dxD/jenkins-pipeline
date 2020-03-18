@@ -13,7 +13,7 @@ def call(Config configs) {
         String key = entry.getKey();
         ArrayList<String> value = entry.getValue();
         for(String project : value) {
-           addProject(project.name, project)
+           configs.addProject(project.name, project)
            echo "Added project: " + project.name
         }
     }
