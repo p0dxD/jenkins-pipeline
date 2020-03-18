@@ -4,6 +4,7 @@ import space.joserod.configs.Config
 
 public class PipelineManager {
     private Config configs
+    private boolean exitEarly
     private static PipelineManager pipelineManager = new PipelineManager();
 
     private PipelineManager() {
@@ -20,5 +21,13 @@ public class PipelineManager {
 
    private Config getProjectConfigurations() {
        return this.configs
+   }
+
+   public void setExitEarly(boolean exitEarly) {
+       this.exitEarly = exitEarly
+   }
+
+   public boolean exitEarly() {
+       return this.exitEarly
    }
 }
