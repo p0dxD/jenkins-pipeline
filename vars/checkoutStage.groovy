@@ -17,7 +17,7 @@ def call(Config configs) {
         echo "Value:" + value
         for(String name : value)
         {
-           echo "inside: " + name
+           echo "inside: " + name.name
         }
     }
     sh 'ls -la'
