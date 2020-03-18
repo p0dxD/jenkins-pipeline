@@ -1,13 +1,14 @@
-import space.joserod.configs.Config
+import space.joserod.pipeline.PipelineManager
 
-def call(Config configs) {
+def call(PipelineManager pipelineManager) {
     cleanWs()
     checkout scm 
-    fillconfiguration(configs)
+    fillconfiguration(pipelineManager)
+    error("Finishing early testing...")
     stash "workspace"
 }
 
-private void fillconfiguration(Config configs) {
+private void fillconfiguration(PipelineManager pipelineManager) {
     //Read configuration
     LinkedHashMap datas = readYaml file: 'configuration.yml'
 
@@ -19,14 +20,14 @@ private void fillconfiguration(Config configs) {
             String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+ "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
            String changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
            if (changesCmdOutput.equalsIgnoreCase('Has changes.')) {
-            configs.addProject(project.name, project)
+            pipelineManager.getConfigs().addProject(project.name, project)
             echo "Added project with changes: " + project.name
            }
         }
     }
-    configs.getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
+    pipelineManager.getConfigs().getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
 
-    if (configs.getProjectsConfigs().size() == 1) {
+    if (pipelineManager.getConfigs().getProjectsConfigs().size() == 1) {
         //we exit pipeline there's no changes, why build? unless triggered by hand. 
         currentBuild.result = 'SUCCESS'
         return

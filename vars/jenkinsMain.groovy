@@ -1,6 +1,6 @@
-import space.joserod.configs.Config
+import space.joserod.pipeline.PipelineManager
 def call(){
-    Config configs = Config.getInstance();
+    PipelineManager pipelineManager = PipelineManager.getInstance();
     pipeline {
         agent none
         stages {
@@ -8,7 +8,7 @@ def call(){
                     agent { label "builder.ci.jenkins"}
                 steps {
                     script {
-                        checkoutStage(configs)//initialize config, checkout code
+                        checkoutStage(pipelineManager)//initialize config, checkout code
                     }
                 }
             }
