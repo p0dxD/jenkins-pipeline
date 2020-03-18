@@ -4,12 +4,17 @@ import java.util.ArrayList;
 import space.joserod.projects.*
 
 public class Config {
-    HashMap<String, ProjectConfiguration> projects;
+    private HashMap<String, ProjectConfiguration> projects;
+    private static Config instance = new Config();
 
-    public Config() {
-        this.configuration = configuration
+    private Config() {
         projects = new HashMap<>()
     }
+
+   //Get the only object available
+   public static Config getInstance(){
+      return instance;
+   }
 
     public void addProject(String name, String values) {
         ProjectConfiguration tmp = new ProjectConfiguration(values)

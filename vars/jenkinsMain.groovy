@@ -1,6 +1,6 @@
 import space.joserod.configs.Config
 def call(){
-    Config configs = new Config();
+    Config configs = Config.getInstance();
     pipeline {
         agent none
         stages {
