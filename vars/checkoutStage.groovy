@@ -15,6 +15,10 @@ def call(Config configs) {
         // now work with key and value...
         echo "Key:" + key
         echo "Value:" + value
+        for(String name : value)
+        {
+           echo "inside: " + name
+        }
     }
     sh 'ls -la'
     echo "Dta: ${datas}"
