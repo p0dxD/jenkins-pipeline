@@ -8,6 +8,7 @@ def call(){
                     agent { label "builder.ci.jenkins"}
                 steps {
                     script {
+                        echo "here"
                         checkoutStage(pipelineManager)//initialize config, checkout code
                     }
                 }
