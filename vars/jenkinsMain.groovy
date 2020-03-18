@@ -31,7 +31,6 @@ def call(){
                     script {
                         cleanWs()
                         unstash "workspace"
-                        build(configs)
                         error "Unstable, exiting now..."
                         withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
                             sh "mkdir src bin && go get ./..."

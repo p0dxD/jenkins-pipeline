@@ -3,7 +3,7 @@ package space.joserod.pipeline
 import space.joserod.configs.Config
 
 public class PipelineManager {
-    Config configs
+    private Config configs
     private static PipelineManager pipelineManager = new PipelineManager();
 
     private PipelineManager() {
