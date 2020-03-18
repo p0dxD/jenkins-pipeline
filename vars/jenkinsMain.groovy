@@ -8,9 +8,8 @@ def call(){
                     agent { label "builder.ci.jenkins"}
                 steps {
                     script {
-                        echo "here"
-                        pipelineManager.init()
-                        checkoutStage(pipelineManager)//initialize config, checkout code
+                        pipelineManager.init()// init pipeline configuration and manager
+                        checkoutStage(pipelineManager)// initialize config, checkout code
                     }
                 }
             }
