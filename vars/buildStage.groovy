@@ -4,6 +4,7 @@ import space.joserod.pipeline.PipelineManager
 def call(PipelineManager pipelineManager){
     cleanWs()
     unstash "workspace"
+    sh "ls -la"
     error "Unstable, exiting now..."
     withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
         sh "mkdir src bin && go get ./..."
