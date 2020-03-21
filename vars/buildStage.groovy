@@ -12,7 +12,7 @@ def call(PipelineManager pipelineManager){
         projects["${projectPath}"] = {
             node {
                 stage("${projectPath}") {
-                    echo '${projectPath}'
+                    echo "${projectPath}"
                 }
             }
         }
