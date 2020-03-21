@@ -12,9 +12,13 @@ def call(PipelineManager pipelineManager){
         def projectName = v.name
         projects["${projectName}"] = {
             node {
+                agent {
+                 docker { image 'node:7-alpine' }
+                }
                 stage("${projectName}") {
                     ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
                     echo "${projectConfiguration.values.stages.build}"
+                     sh 'node --version'
                 }
             }
         }
