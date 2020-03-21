@@ -12,6 +12,7 @@ def call(PipelineManager pipelineManager){
         def projectName = v.name
         projects["${projectName}"] = {
             node("master") {
+            sh ". ~/.profile"
             docker.image('node:7-alpine').inside {
                 stage("${projectName}") {
                     ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
