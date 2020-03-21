@@ -5,7 +5,6 @@ def call(PipelineManager pipelineManager){
     cleanWs()
     unstash "workspace"
     sh "ls -la"
-    // sh ". /home/p0dxd/.profile"
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         println "${k}:${v.path}" 
@@ -17,12 +16,19 @@ def call(PipelineManager pipelineManager){
         def version = projectConfiguration.values.stages.build.version
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
-            // sh ". /home/p0dxd/.profile"
             docker.image("${tool}:${version}").inside {
                 stage("${projectName}") {
                     unstash "workspace"
-                    echo "${projectConfiguration.values.stages.build}"
-                    sh "${tool} --version"
+                    dir(projectPath) {
+                        echo "${projectConfiguration.values.stages.build}"
+                        if(tool.equals("node")) {
+                            sh "${tool} --version"
+                            sh "npm install"
+                        } else if (tool.equals("gradle")) {
+                            sh "${tool} --version"
+                            sh "gradle clean build"
+                        }
+                    }
                 }
                 }
             }
