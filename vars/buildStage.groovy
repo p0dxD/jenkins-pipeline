@@ -5,9 +5,10 @@ def call(PipelineManager pipelineManager){
     cleanWs()
     unstash "workspace"
     sh "ls -la"
-    pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> L:{
+    pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         println "${k}:${v.path}" 
-        }
+        echo "anotehr"
+        
     }
     error "Unstable, exiting now..."
     // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
