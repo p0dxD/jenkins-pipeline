@@ -26,7 +26,7 @@ private void fillconfiguration(PipelineManager pipelineManager) {
     }
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
 
-    if (pipelineManager.getProjectConfigurations().getProjectsConfigs().size() == 1) {
+    if (pipelineManager.getProjectConfigurations().getProjectsConfigs().size() == 0) {
         //we exit pipeline there's no changes, why build? unless triggered by hand. 
         echo "We found one."
         pipelineManager.setExitEarly(true)// we want to skip other stages
