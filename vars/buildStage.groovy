@@ -14,7 +14,7 @@ def call(PipelineManager pipelineManager){
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
         def tool = projectConfiguration.values.stages.build.tool
-        def version = projectConfiguration.values.stages.version
+        def version = projectConfiguration.values.stages.build.version
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
             // sh ". /home/p0dxd/.profile"
