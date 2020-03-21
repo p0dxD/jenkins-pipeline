@@ -5,11 +5,20 @@ def call(PipelineManager pipelineManager){
     cleanWs()
     unstash "workspace"
     sh "ls -la"
+    def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         println "${k}:${v.path}" 
-        echo "anotehr"
-        
+        def projectPath = v.path
+        projects["${projectPath}"] = {
+            node {
+                stage("${projectPath}") {
+                    echo '${projectPath}'
+                }
+            }
+        }
+    
     }
+    parallel tests
     error "Unstable, exiting now..."
     // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
     //     sh "mkdir src bin && go get ./..."
