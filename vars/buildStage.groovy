@@ -13,12 +13,14 @@ def call(PipelineManager pipelineManager){
         projects["${projectName}"] = {
             node(image 'node:7-alpine') {
                 stage("${projectName}") {
-                // agent {
-                //  docker { image 'node:7-alpine' }
-                // }
+                agent { label "builder.ci.jenkins"}
+                steps {
+                    script {
                     ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
                     echo "${projectConfiguration.values.stages.build}"
                      sh 'node --version'
+                }
+                }
                 }
             }
         }
