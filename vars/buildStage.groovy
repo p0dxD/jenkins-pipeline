@@ -1,5 +1,5 @@
 import space.joserod.pipeline.PipelineManager
-
+import space.joserod.configs.ProjectConfiguration
 
 def call(PipelineManager pipelineManager){
     cleanWs()
@@ -13,7 +13,9 @@ def call(PipelineManager pipelineManager){
         projects["${projectName}"] = {
             node {
                 stage("${projectName}") {
-                    echo "${pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)}"
+                    ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
+
+                    echo "${projectConfiguration.values}"
                 }
             }
         }
