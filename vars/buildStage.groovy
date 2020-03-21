@@ -15,7 +15,7 @@ def call(PipelineManager pipelineManager){
                 stage("${projectName}") {
                     ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
 
-                    echo "${projectConfiguration.values}"
+                    echo "${projectConfiguration.values.stages.build}"
                 }
             }
         }
