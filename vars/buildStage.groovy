@@ -9,18 +9,20 @@ def call(PipelineManager pipelineManager){
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         println "${k}:${v.path}" 
+        ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
+
         def projectPath = v.path
         def projectName = v.name
+        def tool = projectConfiguration.values.stages.build.tool
+        def version = projectConfiguration.values.stages.version
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
             // sh ". /home/p0dxd/.profile"
-            docker.image('node:7-alpine').inside {
+            docker.image("${tool}:${version}").inside {
                 stage("${projectName}") {
                     unstash "workspace"
-                    ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
                     echo "${projectConfiguration.values.stages.build}"
-                     sh 'node --version'
-            
+                    sh "${tool} --version"
                 }
                 }
             }
