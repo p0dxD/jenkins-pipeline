@@ -4,7 +4,7 @@ public class ProjectConfiguration {
     String name
     String version
     String path
-    String values
+    LinkedHashMap values
 
     public ProjectConfiguration(LinkedHashMap values) {
         this.name = values.name
