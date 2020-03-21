@@ -5,7 +5,7 @@ def call(PipelineManager pipelineManager){
     cleanWs()
     unstash "workspace"
     sh "ls -la"
-    sh ". /home/p0dxd/.profile"
+    // sh ". /home/p0dxd/.profile"
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         println "${k}:${v.path}" 
@@ -13,7 +13,7 @@ def call(PipelineManager pipelineManager){
         def projectName = v.name
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
-            sh ". /home/p0dxd/.profile"
+            // sh ". /home/p0dxd/.profile"
             docker.image('node:7-alpine').inside {
                 stage("${projectName}") {
                     unstash "workspace"
