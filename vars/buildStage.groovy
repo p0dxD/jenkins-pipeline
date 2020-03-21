@@ -18,7 +18,7 @@ def call(PipelineManager pipelineManager){
         }
     
     }
-    parallel tests
+    parallel projects
     error "Unstable, exiting now..."
     // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
     //     sh "mkdir src bin && go get ./..."
