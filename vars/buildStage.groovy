@@ -11,7 +11,7 @@ def call(PipelineManager pipelineManager){
         def projectPath = v.path
         def projectName = v.name
         projects["${projectName}"] = {
-            node(image 'node:7-alpine') {
+            node() {
                 stage("${projectName}") {
                 agent { label "builder.ci.jenkins"}
                 steps {
