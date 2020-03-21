@@ -23,10 +23,12 @@ def call(PipelineManager pipelineManager){
                         echo "${projectConfiguration.values.stages.build}"
                         if(tool.equals("node")) {
                             sh "${tool} --version"
-                            sh "npm install"
+                            sh "npm run build"
+                            sh "ls -la"
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
                             sh "gradle clean build"
+                            sh "ls -la"
                         }
                     }
                 }
