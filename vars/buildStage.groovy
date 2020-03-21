@@ -11,18 +11,14 @@ def call(PipelineManager pipelineManager){
         def projectPath = v.path
         def projectName = v.name
         projects["${projectName}"] = {
-            node {
+            node('node:7-alpine') {
                 stage("${projectName}") {
-                    agent {
-                    docker { image 'node:7-alpine' }
-                    }
-                steps {
-                    script {
-                        ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-                        echo "${projectConfiguration.values.stages.build}"
-                        sh 'node --version'
-                    }
-                }
+                // agent {
+                //  docker { image 'node:7-alpine' }
+                // }
+                    ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
+                    echo "${projectConfiguration.values.stages.build}"
+                     sh 'node --version'
                 }
             }
         }
