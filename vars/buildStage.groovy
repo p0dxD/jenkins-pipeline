@@ -5,7 +5,7 @@ def call(PipelineManager pipelineManager){
     cleanWs()
     unstash "workspace"
     sh "ls -la"
-    pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> (){
+    pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> L:{
         println "${k}:${v.path}" 
         }
     }
