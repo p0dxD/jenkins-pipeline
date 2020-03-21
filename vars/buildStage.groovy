@@ -15,6 +15,7 @@ def call(PipelineManager pipelineManager){
             sh ". ~/.profile"
             docker.image('node:7-alpine').inside {
                 stage("${projectName}") {
+                    unstash "workspace"
                     ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
                     echo "${projectConfiguration.values.stages.build}"
                      sh 'node --version'
