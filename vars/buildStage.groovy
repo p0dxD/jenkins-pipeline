@@ -11,7 +11,7 @@ def call(PipelineManager pipelineManager){
         def projectPath = v.path
         def projectName = v.name
         projects["${projectName}"] = {
-            node("master") {
+            node("builder.ci.jenkins") {
             sh ". ~/.profile"
             docker.image('node:7-alpine').inside {
                 stage("${projectName}") {
