@@ -9,10 +9,11 @@ def call(PipelineManager pipelineManager){
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         println "${k}:${v.path}" 
         def projectPath = v.path
-        projects["${projectPath}"] = {
+        def projectName = v.name
+        projects["${projectName}"] = {
             node {
-                stage("${projectPath}") {
-                    echo "${pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectPath)}"
+                stage("${projectName}") {
+                    echo "${pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)}"
                 }
             }
         }
