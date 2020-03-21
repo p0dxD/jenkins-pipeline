@@ -3,6 +3,10 @@ def call(){
     PipelineManager pipelineManager = PipelineManager.getInstance();
     pipeline {
         agent none
+        options {
+            timestamps()
+            skipDefaultCheckout()      // Don't checkout automatically
+        }        
         stages {
             stage('Checkout') {              
                 agent { label "builder.ci.jenkins"}
