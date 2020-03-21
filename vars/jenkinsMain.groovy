@@ -32,7 +32,7 @@ def call(){
                 when {
                     expression { !pipelineManager.exitEarly() }
                 }  
-                agent { label "master"}
+                agent { label "builder.ci.jenkins"}
                 steps {
                     script {
                         buildStage(pipelineManager)
