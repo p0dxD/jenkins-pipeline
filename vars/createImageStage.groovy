@@ -1,4 +1,5 @@
 import space.joserod.pipeline.PipelineManager
+import space.joserod.configs.ProjectConfiguration
 
 def call(PipelineManager pipelineManager) {
     cleanWs()
