@@ -15,6 +15,7 @@ def call(PipelineManager pipelineManager) {
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
                 stage("${projectName}") {
+                    cleanWs()
                     unstash "${projectPath}${tool}"
                     sh "ls -la"
                     // dir(projectPath) {
