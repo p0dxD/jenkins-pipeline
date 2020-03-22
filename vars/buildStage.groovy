@@ -4,7 +4,6 @@ import space.joserod.configs.ProjectConfiguration
 def call(PipelineManager pipelineManager){
     cleanWs()
     unstash "workspace"
-    sh "ls -la"
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         println "${k}:${v.path}" 
@@ -23,12 +22,15 @@ def call(PipelineManager pipelineManager){
                         echo "${projectConfiguration.values.stages.build}"
                         if(tool.equals("node")) {
                             sh "${tool} --version"
+                            sh "npm install"
                             sh "npm run build"
                             sh "ls -la"
+                            stash name: "${projectPath}${tool}", includes: 'dist/**/**'
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
                             sh "gradle clean build"
                             sh "ls -la"
+                            stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         }
                     }
                 }
@@ -38,7 +40,7 @@ def call(PipelineManager pipelineManager){
     
     }
     parallel projects
-    error "Unstable, exiting now..."
+    // error "Unstable, exiting now..."
     // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
     //     sh "mkdir src bin && go get ./..."
     //     env.PATH="${env.GOPATH}/bin:$PATH"

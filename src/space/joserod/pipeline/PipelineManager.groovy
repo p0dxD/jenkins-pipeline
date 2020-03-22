@@ -5,6 +5,7 @@ import space.joserod.configs.Config
 public class PipelineManager {
     private Config configs
     private boolean exitEarly
+    private String dockerImageName
     private static PipelineManager pipelineManager = new PipelineManager();
 
     private PipelineManager() {
@@ -29,5 +30,13 @@ public class PipelineManager {
 
    public boolean exitEarly() {
        return this.exitEarly
+   }
+
+   public void setDockerImageName(String dockerImageName) {
+       this.dockerImageName = dockerImageName
+   }
+
+   public String getDockerImageName() {
+       return this.dockerImageName
    }
 }
