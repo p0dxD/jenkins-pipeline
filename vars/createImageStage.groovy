@@ -16,30 +16,16 @@ def call(PipelineManager pipelineManager) {
             node("builder.ci.jenkins") {
                 stage("${projectName}") {
                     cleanWs()
-                    unstash "${projectPath}${tool}"
-                    sh "ls -la"
-                    // dir(projectPath) {
-                    //     echo "${projectConfiguration.values.stages.build}"
-                    //     if(tool.equals("node")) {
-                    //         sh "${tool} --version"
-                    //         sh "npm install"
-                    //         sh "npm run build"
-                    //         sh "ls -la"
-                    //         stash name: "${projectPath}${tool}", includes: 'dist/**/**'
-                    //     } else if (tool.equals("gradle")) {
-                    //         sh "${tool} --version"
-                    //         sh "gradle clean build"
-                    //         sh "ls -la"
-                    //         stash name: "${projectPath}${tool}", includes: 'build/**/**'
-                    //     }
-                    // }
+                    dir ("${projectPath}${tool}") {
+                        unstash "${projectPath}${tool}"
+                        sh "ls -la"
+                    }
                 }
             }
         }
     
     }
     parallel projects
-    error "Unstable, exiting now..."
     // cleanWs()
     // unstash "workspace"
     // sh "cat ./docker/dockerize.sh"
