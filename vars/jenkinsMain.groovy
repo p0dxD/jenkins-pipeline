@@ -46,10 +46,11 @@ def call(){
                 agent { label "builder.ci.jenkins"}
                 steps {
                     script {
-                        cleanWs()
-                        unstash "workspace"
-                        sh "cat ./docker/dockerize.sh"
-                        sh './docker/dockerize.sh'
+                        createImageStage(pipelineManager)
+                        // cleanWs()
+                        // unstash "workspace"
+                        // sh "cat ./docker/dockerize.sh"
+                        // sh './docker/dockerize.sh'
                     }
                 }
             }
