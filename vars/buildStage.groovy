@@ -33,6 +33,7 @@ def call(PipelineManager pipelineManager){
                             stash name: "${projectPath}${tool}", includes: 'build/**/**', 'dockerfiles/**'
                         }
                     }
+                    stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                 }
                 }
             }

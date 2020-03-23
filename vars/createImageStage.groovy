@@ -18,6 +18,7 @@ def call(PipelineManager pipelineManager) {
                     cleanWs()
                     dir ("${projectPath}${tool}") {
                         unstash "${projectPath}${tool}"
+                        unstash "${projectPath}${tool}docker"
                         sh "ls -la"
                         String dockerfile = "Dockerfile"
                         def customImage = docker.build("${projectName}","-f ${dockerfile} ./dockerfiles")
