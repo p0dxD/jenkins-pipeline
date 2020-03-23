@@ -20,7 +20,7 @@ def call(PipelineManager pipelineManager) {
                         unstash "${projectPath}${tool}"
                         sh "ls -la"
                         String dockerfile = "Dockerfile"
-                        def customImage = docker.build("my-image","-f ${dockerfile} ./dockerfiles")
+                        def customImage = docker.build("${projectName}","-f ${dockerfile} ./dockerfiles")
                         customImage.push('latest')
                     }
                 }
