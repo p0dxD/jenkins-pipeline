@@ -39,7 +39,7 @@ def call(){
                     }
                 }
             }
-            stage('Create image') {
+            stage('Create and push image') {
                 when {
                     expression { !pipelineManager.exitEarly() }
                 }  
