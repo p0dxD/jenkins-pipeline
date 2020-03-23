@@ -25,12 +25,12 @@ def call(PipelineManager pipelineManager){
                             sh "npm install"
                             sh "npm run build"
                             sh "ls -la"
-                            stash name: "${projectPath}${tool}", includes: 'dist/**/*'
+                            stash name: "${projectPath}${tool}", includes: 'dist/**/*', 'dockerfiles/**'
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
                             sh "gradle clean build"
                             sh "ls -la"
-                            stash name: "${projectPath}${tool}", includes: 'build/**/**'
+                            stash name: "${projectPath}${tool}", includes: 'build/**/**', 'dockerfiles/**'
                         }
                     }
                 }
