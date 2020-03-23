@@ -32,8 +32,8 @@ def call(PipelineManager pipelineManager){
                             sh "ls -la"
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         }
+                        stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                     }
-                    stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                 }
                 }
             }
