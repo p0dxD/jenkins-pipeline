@@ -54,6 +54,11 @@ def call(){
                     }
                 }
             }
+            // stage('Clean images') {
+            //     steps{
+            //         sh "docker rmi $registry:$BUILD_NUMBER"
+            //     }
+            // }
         }
     }
 }

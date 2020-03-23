@@ -22,7 +22,9 @@ def call(PipelineManager pipelineManager) {
                         sh "ls -la"
                         String dockerfile = "Dockerfile"
                         def customImage = docker.build("${projectName}","-f dockerfiles/${dockerfile} .")
-                        customImage.push('latest')
+                        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                            customImage.push('latest')
+                        }
                     }
                 }
             }
