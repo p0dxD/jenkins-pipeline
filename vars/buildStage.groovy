@@ -15,6 +15,7 @@ def call(PipelineManager pipelineManager){
             node("builder.ci.jenkins") {
             docker.image("${tool}:${version}").inside {
                 stage("${projectName}") {
+                    cleanWs()
                     unstash "workspace"
                     dir(projectPath) {
                         echo "${projectConfiguration.values.stages.build}"
@@ -31,7 +32,7 @@ def call(PipelineManager pipelineManager){
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang") ) {
                             if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
-                                sh 'mkdir tmp && mv . tmp/'
+                                sh 'mkdir -p tmp && mv . tmp/'
                                 sh 'ls -la'
                             }
                             // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
