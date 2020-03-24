@@ -31,23 +31,27 @@ def call(PipelineManager pipelineManager){
                             sh "ls -la"
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang") ) {
+                            String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
+                            withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin"]) {
+
                             String envPath = "${env.GOPATH}"
-                            if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
-                                sh "mkdir -p ${envPath}"
-                                sh "mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
-                                projectPath="project"
-                                sh "ls -la $envPath/project"
-                            }
-                            // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
-                                dir (envPath+"/"+projectPath) {// /home/go/{projectname}
-                                    // sh "mkdir src bin && go get ./..."
-                                    // env.PATH="${env.GOPATH}/bin:$PATH"
-                                    // sh "go version"
-                                    // sh "go get -d ./pkg/..."
-                                    // sh "go install"
-                                    // sh "go build -o ${projectName} main.go"
-                                    // sh "ls -la"
-                                    echo "Testing"
+                            echo "gopath: $envPath"
+                            // if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
+                            //     sh "mkdir -p ${envPath}"
+                            //     sh "mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
+                            //     projectPath="project"
+                            //     sh "ls -la $envPath/project"
+                            // }
+                            // // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
+                            //     dir (envPath+"/"+projectPath) {// /home/go/{projectname}
+                            //         // sh "mkdir src bin && go get ./..."
+                            //         // env.PATH="${env.GOPATH}/bin:$PATH"
+                            //         // sh "go version"
+                            //         // sh "go get -d ./pkg/..."
+                            //         // sh "go install"
+                            //         // sh "go build -o ${projectName} main.go"
+                            //         // sh "ls -la"
+                            //         echo "Testing"
                                     error("exiting erarly")
                             // }
                                 }
