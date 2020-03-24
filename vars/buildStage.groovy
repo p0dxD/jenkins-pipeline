@@ -38,7 +38,7 @@ def call(PipelineManager pipelineManager){
                             echo "gopath: $envPath"
                             if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
                                 sh "mkdir -p ${envPath}"
-                                sh "mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
+                                sh "rm -Rf $envPath/project && mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
                                 projectPath="project"
                                 sh "ls -la $envPath/project"
                             }
