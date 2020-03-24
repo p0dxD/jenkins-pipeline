@@ -31,27 +31,24 @@ def call(PipelineManager pipelineManager){
                             sh "ls -la"
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang") ) {
-                            if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
                             String envPath = "${env.GOPATH}"
-                            sh "mkdir -p ${envPath}"
-                            sh "ls /home/go"
-                            echo envPath
-                            sh "mkdir -p $envPath/project && mv \$(pwd)/* $envPath/project/"
-                            sh "ls /home/go"
-                                // echo commandToExectue
-                            sh "ls -la $envPath/project"
+                            if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
+                                sh "mkdir -p ${envPath}"
+                                sh "mkdir -p $envPath/project && mv \$(pwd)/* $envPath/project/"
+                                projectPath="project"
                             }
                             // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
-                            //     sh "mkdir src bin && go get ./..."
-                            //     env.PATH="${env.GOPATH}/bin:$PATH"
-                            //     sh "go version"
-                            //     sh "go get -d ./pkg/..."
-                            //     sh "go install"
-                            //     sh "go build -o ${projectName} main.go"
-                            echo "${env.GOPATH}"
-                                sh "ls -la"
-                                error("exiting erarly")
+                                dir (envPath+"/"+projectPath) {// /home/go/{projectname}
+                                    // sh "mkdir src bin && go get ./..."
+                                    // env.PATH="${env.GOPATH}/bin:$PATH"
+                                    sh "go version"
+                                    sh "go get -d ./pkg/..."
+                                    sh "go install"
+                                    sh "go build -o ${projectName} main.go"
+                                    sh "ls -la"
+                                    error("exiting erarly")
                             // }
+                                }
                         }
                         stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                     }
