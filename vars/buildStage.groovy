@@ -11,6 +11,7 @@ def call(PipelineManager pipelineManager){
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
         def tool = projectConfiguration.values.stages.build.tool
         def version = projectConfiguration.values.stages.build.version
+        def configurationsToKeep = projectConfiguration.values.stages.build?.configurations
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
             docker.image("${tool}:${version}").inside {
@@ -36,27 +37,33 @@ def call(PipelineManager pipelineManager){
 
                             String envPath = "${env.GOPATH}"
                             echo "gopath: $envPath"
+                            //does not have a path
+                            sh "mkdir -p ${envPath}"
                             if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
-                                sh "mkdir -p ${envPath}"
                                 sh "rm -Rf $envPath/project && mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
                                 projectPath="project"
-                                sh "ls -la $envPath/project"
-                            }
-                            // // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
-                                dir (envPath+"/"+projectPath) {// /home/go/{projectname}
+                            } else {
+                                sh "rm -Rf $envPath/$projectPath && mkdir -p $envPath/$projectPath && chmod a+rwx $envPath/$projectPath && mv \$(pwd)/$projectPath/* $envPath/$projectPath/"
+                            } 
+                            dir (envPath+"/"+projectPath) {// /home/go/{projectname}
                                 String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
-                                    sh "mkdir src bin && go get ./..."
-                                    sh "go version"
-                                    int checkforPkgFolder = sh(script: "[ -d 'pkg' ]", returnStatus: true)
-                                    if ( checkforPkgFolder == 0) {
-                                        sh "go get -d ./pkg/..."
-                                    }
-                                    sh "go install"
-                                    sh "go build -o ${name} main.go"
-                                    error("exiting erarly")
-                            }
+                                sh "mkdir src bin && go get ./..."
+                                sh "go version"
+                                int checkforPkgFolder = sh(script: "[ -d 'pkg' ]", returnStatus: true)
+                                if ( checkforPkgFolder == 0) {
+                                    sh "go get -d ./pkg/..."
                                 }
+                                sh "go install"
+                                sh "go build -o ${name} main.go"
+                                }
+                            }
                         }
+                        if ( configurationsToKeep != null ) {
+                            for (String config : configurationsToKeep) {
+                                echo "Config: " + config
+                            }
+                        }
+                        error("finishing early")
                         stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                     }
                 }
