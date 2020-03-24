@@ -11,12 +11,13 @@ def call(PipelineManager pipelineManager) {
         def tool = projectConfiguration.values.stages.build.tool
         def version = projectConfiguration.values.stages.build.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
+        String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
                 stage("${projectName}") {
                     cleanWs()
                     dir ("${projectPath}${tool}") {
-                        getConfigurationFiles(projectPath, tool, configurationsToKeep)
+                        getConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                         sh "ls -la"
                         String dockerfile = "Dockerfile"
                         def customImage = docker.build("${projectName}","-f dockerfiles/${dockerfile} .")
@@ -36,10 +37,10 @@ def call(PipelineManager pipelineManager) {
     // sh './docker/dockerize.sh'
 }
 
-private void getConfigurationFiles(String projectPath, String tool, def configurationsToKeep) {
+private void getConfigurationFiles(String name, String projectPath, String tool, def configurationsToKeep) {
+    if ( projectPath.equals("") ) projectPath = "project"
     unstash "${projectPath}${tool}"
     unstash "${projectPath}${tool}docker"
-    if ( projectPath.equals("") ) projectPath = "project"
     if ( configurationsToKeep != null ) {
         int index = 0
         for (String config : configurationsToKeep) {

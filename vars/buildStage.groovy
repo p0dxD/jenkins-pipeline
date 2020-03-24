@@ -12,6 +12,7 @@ def call(PipelineManager pipelineManager){
         def tool = projectConfiguration.values.stages.build.tool
         def version = projectConfiguration.values.stages.build.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
+        String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
             docker.image("${tool}:${version}").inside {
@@ -24,11 +25,11 @@ def call(PipelineManager pipelineManager){
                             sh "${tool} --version"
                             sh "npm install"
                             sh "npm run build"
-                            saveConfigurationFiles(projectPath, tool, configurationsToKeep)
+                            saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
                             sh "gradle clean build"
-                            saveConfigurationFiles(projectPath, tool, configurationsToKeep)
+                            saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                         } else if (tool.equals("golang") ) {
                             String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
                             withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin", "PATH=$GOPATH/bin:$PATH"]) {
@@ -42,7 +43,6 @@ def call(PipelineManager pipelineManager){
                                     sh "rm -Rf $envPath/$projectPath && mkdir -p $envPath/$projectPath && chmod a+rwx $envPath/$projectPath && mv \$(pwd)/$projectPath/* $envPath/$projectPath/"
                                 } 
                                 dir (envPath+"/"+projectPath) {// /home/go/{projectname}
-                                    String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
                                     sh "mkdir src bin && go get ./..."
                                     sh "go version"
                                     int checkforPkgFolder = sh(script: "[ -d 'pkg' ]", returnStatus: true)
@@ -52,7 +52,7 @@ def call(PipelineManager pipelineManager){
                                     sh "go install"
                                     sh "go build -o ${name} main.go"
 
-                                    saveConfigurationFiles(projectPath, tool, configurationsToKeep)
+                                    saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                                 }
                             }
                         }
@@ -77,12 +77,15 @@ def call(PipelineManager pipelineManager){
 }
 
 
-private void saveConfigurationFiles(String projectPath, String tool, def configurationsToKeep) {
+private void saveConfigurationFiles(String projectName, String projectPath, String tool, def configurationsToKeep) {
+    String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
     if(tool.equals("node")) {
         stash name: "${projectPath}${tool}", includes: 'dist/**/*'
     } else if (tool.equals("gradle")) {
         stash name: "${projectPath}${tool}", includes: 'build/**/**'
-    }  
+    }  else if (tool.equals("golang") ) {
+        stash name: "${projectPath}${tool}", includes: name
+    }
     stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
     if ( configurationsToKeep != null ) {
         int index = 0
