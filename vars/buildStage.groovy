@@ -8,7 +8,7 @@ def call(PipelineManager pipelineManager){
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         println "${k}:${v.path}" 
 
-        def projectPath = v.path
+        def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
         def tool = projectConfiguration.values.stages.build.tool
@@ -31,6 +31,10 @@ def call(PipelineManager pipelineManager){
                             sh "gradle clean build"
                             sh "ls -la"
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
+                        } else if (tool.equals("golang")) {
+                            sh "go version"
+                            sh "ls -la"
+                            error("exiting erarly")
                         }
                         stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                     }
