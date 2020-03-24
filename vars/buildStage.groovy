@@ -29,8 +29,8 @@ def call(PipelineManager pipelineManager){
                             sh "gradle clean build"
                             sh "ls -la"
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
-                        } else if (tool.equals("golang")) {
-                            if (projectPath == null) {//we are in a unique situation we move current project into a folder
+                        } else if (tool.equals("golang") ) {
+                            if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
                                 sh 'mkdir tmp && mv ./**/* tmp/'
                                 sh 'ls -la'
                             }
