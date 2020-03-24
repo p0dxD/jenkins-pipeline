@@ -42,9 +42,9 @@ def call(PipelineManager pipelineManager){
                                     // sh "mkdir src bin && go get ./..."
                                     // env.PATH="${env.GOPATH}/bin:$PATH"
                                     sh "go version"
-                                    sh "go get -d ./pkg/..."
-                                    sh "go install"
-                                    sh "go build -o ${projectName} main.go"
+                                    // sh "go get -d ./pkg/..."
+                                    // sh "go install"
+                                    // sh "go build -o ${projectName} main.go"
                                     sh "ls -la"
                                     error("exiting erarly")
                             // }
