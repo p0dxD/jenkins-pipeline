@@ -85,12 +85,12 @@ def call(PipelineManager pipelineManager){
 
 
 private void saveConfigurationFiles(String projectPath, String tool, def configurationsToKeep) {
-if ( configurationsToKeep != null ) {
-    int index = 0
-    for (String config : configurationsToKeep) {
-        echo "Config: " + config
-        stash name: "${projectPath}${tool}${index}docker", includes: config
-        index = index + 1
-    }
-} 
+    if ( configurationsToKeep != null ) {
+        int index = 0
+        for (String config : configurationsToKeep) {
+            echo "Config: " + config
+            stash name: "${projectPath}${tool}${index}", includes: config
+            index = index + 1
+        }
+    } 
 }
