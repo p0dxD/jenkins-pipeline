@@ -32,8 +32,8 @@ def call(PipelineManager pipelineManager){
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang") ) {
                             if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
-                                sh "mkdir -p ${env.GOPATH}/project && mv $(pwd)/* ${env.GOPATH}/project/"
-                                sh "ls -la ${env.GOPATH}/project"
+                                sh "mkdir -p "+"${env.GOPATH}"+"/project && mv $(pwd)/* "+"${env.GOPATH}"+"/project/"
+                                sh "ls -la "+"${env.GOPATH}"+"/project"
                             }
                             // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
                             //     sh "mkdir src bin && go get ./..."
@@ -42,6 +42,8 @@ def call(PipelineManager pipelineManager){
                             //     sh "go get -d ./pkg/..."
                             //     sh "go install"
                             //     sh "go build -o ${projectName} main.go"
+                            echo "${env.GOPATH}"
+                                sh "ls -la"
                                 error("exiting erarly")
                             // }
                         }
