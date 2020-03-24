@@ -25,47 +25,42 @@ def call(PipelineManager pipelineManager){
                             sh "npm install"
                             sh "npm run build"
                             sh "ls -la"
+                            saveConfigurationFiles(projectPath, tool, configurationsToKeep)
                             stash name: "${projectPath}${tool}", includes: 'dist/**/*'
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
                             sh "gradle clean build"
                             sh "ls -la"
+                            saveConfigurationFiles(projectPath, tool, configurationsToKeep)
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang") ) {
                             String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
                             withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin", "PATH=$GOPATH/bin:$PATH"]) {
+                                String envPath = "${env.GOPATH}"
+                                //does not have a path
+                                sh "mkdir -p ${envPath}"
+                                if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
+                                    sh "rm -Rf $envPath/project && mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
+                                    projectPath="project"
+                                } else {
+                                    sh "rm -Rf $envPath/$projectPath && mkdir -p $envPath/$projectPath && chmod a+rwx $envPath/$projectPath && mv \$(pwd)/$projectPath/* $envPath/$projectPath/"
+                                } 
+                                dir (envPath+"/"+projectPath) {// /home/go/{projectname}
+                                    String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
+                                    sh "mkdir src bin && go get ./..."
+                                    sh "go version"
+                                    int checkforPkgFolder = sh(script: "[ -d 'pkg' ]", returnStatus: true)
+                                    if ( checkforPkgFolder == 0) {
+                                        sh "go get -d ./pkg/..."
+                                    }
+                                    sh "go install"
+                                    sh "go build -o ${name} main.go"
 
-                            String envPath = "${env.GOPATH}"
-                            echo "gopath: $envPath"
-                            //does not have a path
-                            sh "mkdir -p ${envPath}"
-                            if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
-                                sh "rm -Rf $envPath/project && mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
-                                projectPath="project"
-                            } else {
-                                sh "rm -Rf $envPath/$projectPath && mkdir -p $envPath/$projectPath && chmod a+rwx $envPath/$projectPath && mv \$(pwd)/$projectPath/* $envPath/$projectPath/"
-                            } 
-                            dir (envPath+"/"+projectPath) {// /home/go/{projectname}
-                                String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
-                                sh "mkdir src bin && go get ./..."
-                                sh "go version"
-                                int checkforPkgFolder = sh(script: "[ -d 'pkg' ]", returnStatus: true)
-                                if ( checkforPkgFolder == 0) {
-                                    sh "go get -d ./pkg/..."
-                                }
-                                sh "go install"
-                                sh "go build -o ${name} main.go"
+                                    saveConfigurationFiles(projectPath, tool, configurationsToKeep)
                                 }
                             }
                         }
-                        if ( configurationsToKeep != null ) {
-                            int index = 0
-                            for (String config : configurationsToKeep) {
-                                echo "Config: " + config
-                                stash name: "${projectPath}${tool}${index}docker", includes: config
-                                index = index + 1
-                            }
-                        }
+
                         error("finishing early")
                         stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                     }
@@ -86,4 +81,16 @@ def call(PipelineManager pipelineManager){
     //     sh 'go build -o subway main.go'
     //     stash "workspace"
     // }
+}
+
+
+private void saveConfigurationFiles(String projectPath, String tool, LinkedHashMap configurationsToKeep) {
+if ( configurationsToKeep != null ) {
+    int index = 0
+    for (String config : configurationsToKeep) {
+        echo "Config: " + config
+        stash name: "${projectPath}${tool}${index}docker", includes: config
+        index = index + 1
+    }
+} 
 }
