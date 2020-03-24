@@ -6,8 +6,6 @@ def call(PipelineManager pipelineManager){
     unstash "workspace"
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
-        println "${k}:${v.path}" 
-
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
@@ -33,6 +31,9 @@ def call(PipelineManager pipelineManager){
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang")) {
                             sh "go version"
+                            sh "go get -d ./pkg/..."
+                            sh "go install"
+                            sh "go build -o ${projectName} main.go"
                             sh "ls -la"
                             error("exiting erarly")
                         }
