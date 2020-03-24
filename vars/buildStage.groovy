@@ -41,7 +41,7 @@ def call(PipelineManager pipelineManager){
                                 dir (envPath+"/"+projectPath) {// /home/go/{projectname}
                                     // sh "mkdir src bin && go get ./..."
                                     // env.PATH="${env.GOPATH}/bin:$PATH"
-                                    sh "go version"
+                                    // sh "go version"
                                     // sh "go get -d ./pkg/..."
                                     // sh "go install"
                                     // sh "go build -o ${projectName} main.go"
