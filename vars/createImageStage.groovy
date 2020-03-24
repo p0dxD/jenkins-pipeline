@@ -5,9 +5,7 @@ def call(PipelineManager pipelineManager) {
     cleanWs()
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
-        println "${k}:${v.path}" 
-
-        def projectPath = v.path
+        def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
         def tool = projectConfiguration.values.stages.build.tool
