@@ -36,6 +36,7 @@ def call(PipelineManager pipelineManager){
                                 sh "mkdir -p ${envPath}"
                                 sh "mkdir -p $envPath/project && mv \$(pwd)/* $envPath/project/"
                                 projectPath="project"
+                                sh "ls -la $envPath/project"
                             }
                             // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
                                 dir (envPath+"/"+projectPath) {// /home/go/{projectname}
