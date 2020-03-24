@@ -47,11 +47,12 @@ def call(PipelineManager pipelineManager){
                                 String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
                                     sh "mkdir src bin && go get ./..."
                                     sh "go version"
-                                    sh "go get -d ./pkg/..."
+                                    int checkforPkgFolder = sh(script: "[ -d 'pkg' ]", returnStatus: true)
+                                    if ( checkforPkgFolder == 0) {
+                                        sh "go get -d ./pkg/..."
+                                    }
                                     sh "go install"
                                     sh "go build -o ${name} main.go"
-                                    sh "ls -la"
-                                    echo "Testing"
                                     error("exiting erarly")
                             }
                                 }
