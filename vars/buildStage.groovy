@@ -33,6 +33,7 @@ def call(PipelineManager pipelineManager){
                         } else if (tool.equals("golang") ) {
                             if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
                             String envPath = "${env.GOPATH}"
+                            sh "ls ${envPath}"
                             echo envPath
                             // String commandToExectue = "mkdir -p "$env.GOPATH"/project && mv $(pwd)/* "$env.GOPATH"/project/"
                                 // echo commandToExectue
