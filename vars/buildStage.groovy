@@ -24,15 +24,11 @@ def call(PipelineManager pipelineManager){
                             sh "${tool} --version"
                             sh "npm install"
                             sh "npm run build"
-                            sh "ls -la"
                             saveConfigurationFiles(projectPath, tool, configurationsToKeep)
-                            stash name: "${projectPath}${tool}", includes: 'dist/**/*'
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
                             sh "gradle clean build"
-                            sh "ls -la"
                             saveConfigurationFiles(projectPath, tool, configurationsToKeep)
-                            stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang") ) {
                             String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
                             withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin", "PATH=$GOPATH/bin:$PATH"]) {
@@ -60,9 +56,6 @@ def call(PipelineManager pipelineManager){
                                 }
                             }
                         }
-
-                        error("finishing early")
-                        stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                     }
                 }
                 }
@@ -85,6 +78,12 @@ def call(PipelineManager pipelineManager){
 
 
 private void saveConfigurationFiles(String projectPath, String tool, def configurationsToKeep) {
+    if(tool.equals("node")) {
+        stash name: "${projectPath}${tool}", includes: 'dist/**/*'
+    } else if (tool.equals("gradle")) {
+        stash name: "${projectPath}${tool}", includes: 'build/**/**'
+    }  
+    stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
     if ( configurationsToKeep != null ) {
         int index = 0
         for (String config : configurationsToKeep) {
