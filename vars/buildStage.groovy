@@ -30,12 +30,16 @@ def call(PipelineManager pipelineManager){
                             sh "ls -la"
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang")) {
-                            sh "go version"
-                            sh "go get -d ./pkg/..."
-                            sh "go install"
-                            sh "go build -o ${projectName} main.go"
-                            sh "ls -la"
-                            error("exiting erarly")
+                            withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
+                                sh "mkdir src bin && go get ./..."
+                                env.PATH="${env.GOPATH}/bin:$PATH"
+                                sh "go version"
+                                sh "go get -d ./pkg/..."
+                                sh "go install"
+                                sh "go build -o ${projectName} main.go"
+                                sh "ls -la"
+                                error("exiting erarly")
+                            }
                         }
                         stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
                     }
