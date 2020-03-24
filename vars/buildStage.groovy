@@ -44,11 +44,12 @@ def call(PipelineManager pipelineManager){
                             }
                             // // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
                                 dir (envPath+"/"+projectPath) {// /home/go/{projectname}
+                                String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
                                     sh "mkdir src bin && go get ./..."
                                     sh "go version"
                                     sh "go get -d ./pkg/..."
                                     sh "go install"
-                                    sh "go build -o ${projectName} main.go"
+                                    sh "go build -o ${name} main.go"
                                     sh "ls -la"
                                     echo "Testing"
                                     error("exiting erarly")
