@@ -84,7 +84,7 @@ def call(PipelineManager pipelineManager){
 }
 
 
-private void saveConfigurationFiles(String projectPath, String tool, LinkedHashMap configurationsToKeep) {
+private void saveConfigurationFiles(String projectPath, String tool, def configurationsToKeep) {
 if ( configurationsToKeep != null ) {
     int index = 0
     for (String config : configurationsToKeep) {
