@@ -36,14 +36,14 @@ def call(PipelineManager pipelineManager){
 
                             String envPath = "${env.GOPATH}"
                             echo "gopath: $envPath"
-                            // if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
-                            //     sh "mkdir -p ${envPath}"
-                            //     sh "mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
-                            //     projectPath="project"
-                            //     sh "ls -la $envPath/project"
-                            // }
+                            if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
+                                sh "mkdir -p ${envPath}"
+                                sh "mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
+                                projectPath="project"
+                                sh "ls -la $envPath/project"
+                            }
                             // // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
-                            //     dir (envPath+"/"+projectPath) {// /home/go/{projectname}
+                                dir (envPath+"/"+projectPath) {// /home/go/{projectname}
                             //         // sh "mkdir src bin && go get ./..."
                             //         // env.PATH="${env.GOPATH}/bin:$PATH"
                             //         // sh "go version"
@@ -53,7 +53,7 @@ def call(PipelineManager pipelineManager){
                             //         // sh "ls -la"
                             //         echo "Testing"
                                     error("exiting erarly")
-                            // }
+                            }
                                 }
                         }
                         stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
