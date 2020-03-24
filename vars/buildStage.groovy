@@ -32,7 +32,7 @@ def call(PipelineManager pipelineManager){
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang") ) {
                             String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
-                            withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin"]) {
+                            withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin", "PATH=$GOPATH/bin:$PATH"]) {
 
                             String envPath = "${env.GOPATH}"
                             echo "gopath: $envPath"
@@ -44,14 +44,13 @@ def call(PipelineManager pipelineManager){
                             }
                             // // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
                                 dir (envPath+"/"+projectPath) {// /home/go/{projectname}
-                            //         // sh "mkdir src bin && go get ./..."
-                            //         // env.PATH="${env.GOPATH}/bin:$PATH"
-                            //         // sh "go version"
-                            //         // sh "go get -d ./pkg/..."
-                            //         // sh "go install"
-                            //         // sh "go build -o ${projectName} main.go"
+                                    sh "mkdir src bin && go get ./..."
+                                    sh "go version"
+                                    sh "go get -d ./pkg/..."
+                                    sh "go install"
+                                    sh "go build -o ${projectName} main.go"
                                     sh "ls -la"
-                            //         echo "Testing"
+                                    echo "Testing"
                                     error("exiting erarly")
                             }
                                 }
