@@ -30,6 +30,10 @@ def call(PipelineManager pipelineManager){
                             sh "ls -la"
                             stash name: "${projectPath}${tool}", includes: 'build/**/**'
                         } else if (tool.equals("golang")) {
+                            if (projectPath == null) {//we are in a unique situation we move current project into a folder
+                                sh 'mkdir tmp && mv ./**/* tmp/'
+                                sh 'ls -la'
+                            }
                             // withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
                             //     sh "mkdir src bin && go get ./..."
                             //     env.PATH="${env.GOPATH}/bin:$PATH"
