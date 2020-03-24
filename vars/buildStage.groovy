@@ -11,7 +11,7 @@ def call(PipelineManager pipelineManager){
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
         def tool = projectConfiguration.values.stages.build.tool
         def version = projectConfiguration.values.stages.build.version
-        def configurationsToKeep = projectConfiguration.values.stages.build?.configurations
+        def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
             docker.image("${tool}:${version}").inside {
