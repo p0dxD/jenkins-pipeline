@@ -36,7 +36,7 @@ def call(PipelineManager pipelineManager){
                             sh "mkdir -p ${envPath}"
                             sh "ls /home/go"
                             echo envPath
-                            sh "mkdir -p $envPath/project && mv $(pwd)/* $envPath/project/"
+                            sh "mkdir -p $envPath/project && mv \$(pwd)/* $envPath/project/"
                             sh "ls /home/go"
                                 // echo commandToExectue
                             sh "ls -la $envPath/project"
