@@ -46,7 +46,8 @@ def call(PipelineManager pipelineManager){
                                     // sh "go get -d ./pkg/..."
                                     // sh "go install"
                                     // sh "go build -o ${projectName} main.go"
-                                    sh "ls -la"
+                                    // sh "ls -la"
+                                    echo "Testing"
                                     error("exiting erarly")
                             // }
                                 }
