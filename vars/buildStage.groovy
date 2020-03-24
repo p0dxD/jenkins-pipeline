@@ -59,8 +59,11 @@ def call(PipelineManager pipelineManager){
                             }
                         }
                         if ( configurationsToKeep != null ) {
+                            int index = 0
                             for (String config : configurationsToKeep) {
                                 echo "Config: " + config
+                                stash name: "${projectPath}${tool}${index}docker", includes: config
+                                index = index + 1
                             }
                         }
                         error("finishing early")
