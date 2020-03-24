@@ -16,12 +16,13 @@ private void fillconfiguration(PipelineManager pipelineManager) {
         ArrayList<String> value = entry.getValue();
         for(String project : value) {
             //check the diffs if there isnt a change we can just return the pipeline, doesn't need to build.
+            echo "${project.path}"
             String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+ "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
-           String changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
-           if (changesCmdOutput.equalsIgnoreCase('Has changes.')) {
-            pipelineManager.getProjectConfigurations().addProject(project.name, project)
-            echo "Added project with changes: " + project.name
-           }
+            String changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
+            if (changesCmdOutput.equalsIgnoreCase('Has changes.')) {
+             pipelineManager.getProjectConfigurations().addProject(project.name, project)
+             echo "Added project with changes: " + project.name
+            }
         }
     }
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> println "${k}:${v.version}" }
