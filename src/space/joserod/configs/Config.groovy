@@ -39,6 +39,6 @@ public class Config {
         return this.projects
     }
     public HashMap<String, DockerConfiguration> getDockerConfigs(){
-        return this.projects
+        return this.dockerConfigurations
     }
 }
