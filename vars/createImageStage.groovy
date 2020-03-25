@@ -31,10 +31,6 @@ def call(PipelineManager pipelineManager) {
     
     }
     parallel projects
-    // cleanWs()
-    // unstash "workspace"
-    // sh "cat ./docker/dockerize.sh"
-    // sh './docker/dockerize.sh'
 }
 
 private void getConfigurationFiles(String name, String projectPath, String tool, def configurationsToKeep) {
