@@ -16,7 +16,7 @@ def call(PipelineManager pipelineManager) {
             node("builder.ci.jenkins") {
                 stage("${projectName}") {
                     cleanWs()
-                    echo "Docker configuration: " + pipelineManager.getProjectConfigurations().getDockerConfigs().get(projectName)
+                    echo "Docker configuration: " + pipelineManager.getProjectConfigurations().getDockerConfigs().get(projectName).values
                     // dir ("${projectPath}${tool}") {
                     //     getConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                     //     sh "ls -la"
