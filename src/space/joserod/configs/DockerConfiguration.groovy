@@ -1,10 +1,10 @@
 package space.joserod.configs
 
-public class Dockerconfiguration {
-    
+public class DockerConfiguration {
+
     LinkedHashMap values
 
-    public Dockerconfiguration(LinkedHashMap values) {
+    public DockerConfiguration(LinkedHashMap values) {
         this.values = values
     }
 }
