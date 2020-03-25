@@ -47,10 +47,17 @@ def call(){
                 steps {
                     script {
                         createImageStage(pipelineManager)
-                        // cleanWs()
-                        // unstash "workspace"
-                        // sh "cat ./docker/dockerize.sh"
-                        // sh './docker/dockerize.sh'
+                    }
+                }
+            }
+            stage('Run image') {
+                when {
+                    expression { !pipelineManager.exitEarly() }
+                }  
+                agent { label "builder.ci.jenkins"}
+                steps {
+                    script {
+                        runImageStage(pipelineManager)
                     }
                 }
             }
