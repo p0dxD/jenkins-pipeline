@@ -44,7 +44,7 @@ private void fillconfiguration(PipelineManager pipelineManager) {
 
 private void addDockerConfiguration(PipelineManager pipelineManager, String path = ".") {
     int checkforfile = sh(script: "[ -d ${path}'/dockerfiles/dockerconfiguration.yml' ]", returnStatus: true)
-    if ( checkforPkgFolder == 0) {
+    if ( checkforfile == 0) {
         LinkedHashMap dockerData = readYaml file: "${path}/dockerfiles/dockerconfiguration.yml"
         pipelineManager.getProjectConfigurations().addDockerConfig(project.name, dockerData)
     }
