@@ -19,7 +19,7 @@ private void fillconfiguration(PipelineManager pipelineManager) {
             if (project.path == null) {
                 pipelineManager.getProjectConfigurations().addProject(project.name, project)
                 //docker configs
-                addDockerConfiguration(pipelineManager)
+                addDockerConfiguration(pipelineManager, project.name)
                 continue
             }
             String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+ "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
@@ -28,7 +28,7 @@ private void fillconfiguration(PipelineManager pipelineManager) {
                 pipelineManager.getProjectConfigurations().addProject(project.name, project)
                 echo "Added project with changes: " + project.name
                 //docker configs
-                addDockerConfiguration(pipelineManager, project.path)
+                addDockerConfiguration(pipelineManager, project.name, project.path)
             }
         }
     }
@@ -42,11 +42,11 @@ private void fillconfiguration(PipelineManager pipelineManager) {
     }
 }
 
-private void addDockerConfiguration(PipelineManager pipelineManager, String path = ".") {
+private void addDockerConfiguration(PipelineManager pipelineManager, String projectName, String path = ".") {
     int checkforfile = sh(script: "[ -f ${path}/dockerfiles/dockerconfiguration.yml ]", returnStatus: true)
     echo "Status: ${checkforfile}"
     if ( checkforfile == 0) {
         LinkedHashMap dockerData = readYaml file: "${path}/dockerfiles/dockerconfiguration.yml"
-        pipelineManager.getProjectConfigurations().addDockerConfig(project.name, dockerData)
+        pipelineManager.getProjectConfigurations().addDockerConfig(projectName, dockerData)
     }
 }
