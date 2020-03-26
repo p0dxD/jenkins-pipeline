@@ -24,7 +24,8 @@ def call(PipelineManager pipelineManager) {
                         for(String config : value) {
                             String command = config.command
                             String arguments = config.arguments
-
+                            echo "command: ${command}" 
+                            echo "arguments: ${arguments}"
                         }
                     }
 
