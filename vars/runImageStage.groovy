@@ -17,15 +17,17 @@ def call(PipelineManager pipelineManager) {
                 stage("${projectName}") {
                     cleanWs()
                     echo "Docker configuration: " + pipelineManager.getProjectConfigurations().getDockerConfigs().get(projectName).values
-                    // dir ("${projectPath}${tool}") {
-                    //     getConfigurationFiles(name, projectPath, tool, configurationsToKeep)
-                    //     sh "ls -la"
-                    //     String dockerfile = "Dockerfile"
-                    //     def customImage = docker.build("${projectName}","-f dockerfiles/${dockerfile} .")
-                    //     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                    //         customImage.push('latest')
-                    //     }
-                    // }
+                    LinkedHashMap dockerConfig = pipelineManager.getProjectConfigurations().getDockerConfigs().get(projectName).values
+                    for (Map.Entry<String, ArrayList<String>> entry : dockerConfig.entrySet()) {
+                        String key = entry.getKey();
+                        ArrayList<String> value = entry.getValue();
+                        for(String config : value) {
+                            String command = config.command
+                            String arguments = config.arguments
+
+                        }
+                    }
+
                 }
             }
         }
