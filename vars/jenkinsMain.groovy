@@ -52,7 +52,7 @@ def call(){
             }
             stage('Run image') {
                 when {
-                    expression { !pipelineManager.exitEarly() }
+                    expression { !pipelineManager.exitEarly() && pipelineManager.getProjectConfigurations().getDockerConfigs().size() != 0 }
                 }  
                 agent { label "builder.ci.jenkins"}
                 steps {

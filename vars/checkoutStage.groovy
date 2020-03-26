@@ -19,8 +19,7 @@ private void fillconfiguration(PipelineManager pipelineManager) {
             if (project.path == null) {
                 pipelineManager.getProjectConfigurations().addProject(project.name, project)
                 //docker configs
-                LinkedHashMap dockerData = readYaml file: 'dockerfiles/dockerconfiguration.yml'
-                pipelineManager.getProjectConfigurations().addDockerConfig(project.name, dockerData)
+                addDockerConfiguration(pipelineManager)
                 continue
             }
             String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+ "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
@@ -29,17 +28,24 @@ private void fillconfiguration(PipelineManager pipelineManager) {
                 pipelineManager.getProjectConfigurations().addProject(project.name, project)
                 echo "Added project with changes: " + project.name
                 //docker configs
-                LinkedHashMap dockerData = readYaml file: "${project.path}/dockerfiles/dockerconfiguration.yml"
-                pipelineManager.getProjectConfigurations().addDockerConfig(project.name, dockerData)
+                addDockerConfiguration(pipelineManager, project.path)
             }
         }
     }
-    
+
     if (pipelineManager.getProjectConfigurations().getProjectsConfigs().size() == 0) {
         //we exit pipeline there's no changes, why build? unless triggered by hand. 
         echo "We found one."
         pipelineManager.setExitEarly(true)// we want to skip other stages
         currentBuild.result = 'SUCCESS'
         return
+    }
+}
+
+private void addDockerConfiguration(PipelineManager pipelineManager, String path = ".") {
+    int checkforfile = sh(script: "[ -d ${path}'/dockerfiles/dockerconfiguration.yml' ]", returnStatus: true)
+    if ( checkforPkgFolder == 0) {
+        LinkedHashMap dockerData = readYaml file: "${path}/dockerfiles/dockerconfiguration.yml"
+        pipelineManager.getProjectConfigurations().addDockerConfig(project.name, dockerData)
     }
 }
