@@ -43,7 +43,6 @@ private void fillconfiguration(PipelineManager pipelineManager) {
 }
 
 private void addDockerConfiguration(PipelineManager pipelineManager, String path = ".") {
-    sh "ls -la dockerfiles"
     int checkforfile = sh(script: "[ -f ${path}/dockerfiles/dockerconfiguration.yml ]", returnStatus: true)
     echo "Status: ${checkforfile}"
     if ( checkforfile == 0) {
