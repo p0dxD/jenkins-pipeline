@@ -40,7 +40,7 @@ def call(PipelineManager pipelineManager) {
                                      previous_container=`docker ps -aq --filter "name=$projectName"`
                                      echo Previous container: \$previous_container
                                      if [ -z \$previous_container ]; then echo "No container with that name."; else echo "Cleaning:." && docker stop \$previous_container && docker rm \$previous_container; fi 
-                                     values_to_possibly_remove=\$(docker images -q)
+                                     values_to_possibly_remove="\$(docker images -q)"
                                      echo \$values_to_possibly_remove
                                      docker rmi \$values_to_possibly_remove
                                      "
