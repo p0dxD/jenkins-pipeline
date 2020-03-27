@@ -26,6 +26,13 @@ def call(PipelineManager pipelineManager) {
                             String arguments = config.arguments
                             echo "command: ${command}" 
                             echo "arguments: ${arguments}"
+                            withCredentials([file(credentialsId: 'remote_machine_secret', variable: 'mySecret')]) {
+                                // some block can be a groovy block as well and the variable will be available to the groovy script
+                                sh '''
+                                    echo "This is the directory of the secret file $mySecret"
+                                    echo "This is the content of the file `cat $mySecret`"
+                                '''
+                            }
                         }
                     }
 
