@@ -29,7 +29,7 @@ def call(PipelineManager pipelineManager) {
                             withCredentials([string(credentialsId: 'remote_machine_secret', variable: 'mySecret')]) {
                                 // some block can be a groovy block as well and the variable will be available to the groovy script
                             String dockerExecute = "docker $command ${arguments.config_options} ${getPorts(arguments.ports)} ${getEnvironmentVariables(arguments.environment)}"
-
+                            echo "Command: $dockerExecute"
                                 sh """
                                     ssh $mySecret "
                                      source ~/.bashrc
