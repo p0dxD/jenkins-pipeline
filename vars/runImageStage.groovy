@@ -33,12 +33,14 @@ def call(PipelineManager pipelineManager) {
 // docker stop $previous_container
 // docker rm $previous_container
                                 sh """
-                                    ssh $mySecret "source ~/.bashrc \ 
-                                    && docker pull $projectName:latest  \ 
-                                    && docker ps -a \ 
-                                    && previous_container=$(docker ps -aq --filter "name=$projectName") \
-                                    && echo \$previous_container \
-                                    && docker rmi $(docker images -q)"
+                                    ssh $mySecret "
+                                     source ~/.bashrc  
+                                     docker pull $projectName:latest   
+                                     docker ps -a  
+                                     previous_container=$(docker ps -aq --filter "name=$projectName") 
+                                     echo \$previous_container 
+                                     docker rmi $(docker images -q)
+                                     "
                                 """
                             }
                         }
