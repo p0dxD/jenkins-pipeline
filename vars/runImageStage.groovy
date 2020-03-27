@@ -23,7 +23,7 @@ def call(PipelineManager pipelineManager) {
                         ArrayList<String> value = entry.getValue();
                         for(String config : value) {
                             String command = config.command
-                            String arguments = config.arguments
+                            LinkedHashMap arguments = config.arguments
                             echo "command: ${command}" 
                             echo "arguments: ${arguments}"
                             withCredentials([string(credentialsId: 'remote_machine_secret', variable: 'mySecret')]) {
