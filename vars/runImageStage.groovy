@@ -28,9 +28,9 @@ def call(PipelineManager pipelineManager) {
                             echo "arguments: ${arguments}"
                             withCredentials([string(credentialsId: 'remote_machine_secret', variable: 'mySecret')]) {
                                 // some block can be a groovy block as well and the variable will be available to the groovy script
-                                sh '''
+                                sh """
                                     ssh $mySecret "docker pull $projectName:latest  && docker ps -a"
-                                '''
+                                """
                             }
                         }
                     }
