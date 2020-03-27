@@ -37,7 +37,7 @@ def call(PipelineManager pipelineManager) {
                                      source ~/.bashrc  
                                      docker pull $projectName:latest   
                                      docker ps -a  
-                                     previous_container=$(docker ps -aq --filter "name=$projectName") 
+                                     previous_container=\$(docker ps -aq --filter "name=$projectName") 
                                      echo \$previous_container 
                                      docker rmi $(docker images -q)
                                      "
