@@ -61,6 +61,7 @@ private String getPorts(ArrayList<String> ports) {
 
 private String getEnvironmentVariables(LinkedHashMap map) {
     String envVariables = ""
+    if (map == null) return envVariables
     for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
         String key = entry.getKey();
         String value = entry.getValue();
