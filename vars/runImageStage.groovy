@@ -44,9 +44,9 @@ def call(PipelineManager pipelineManager) {
                                 //      "
                                 // """
                                 sh """
-                                 ssh $mySecret <<'SSHCOMMAND'
-                                    echo \$(uname -a)
-                                 SSHCOMMAND
+                                 ssh $mySecret << 'EOF'
+                                    echo "Test"
+                                EOF
                                 """
                             }
                         }
