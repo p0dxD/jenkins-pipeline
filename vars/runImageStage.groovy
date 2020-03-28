@@ -64,7 +64,7 @@ private String getEnvironmentVariables(LinkedHashMap map) {
     for (Map.Entry<String, ArrayList<String>> entry : map.entrySet()) {
         String key = entry.getKey();
         String value = entry.getValue();
-        envVariables = envVariables + " -e "+ key +"="+ (value.startsWith("$")? "\\"+value : value)
+        envVariables = envVariables + " -e "+ key +"="+ (value.startsWith("\$")? "\\"+value : value)
     }
     return envVariables
 }
