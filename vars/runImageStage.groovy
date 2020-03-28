@@ -37,7 +37,7 @@ def call(PipelineManager pipelineManager) {
                                      docker pull $projectName:latest   
                                      docker ps -a  
                                      docker ps -aq --filter name=$name
-                                     previous_container="$(docker ps -aq --filter name=$name)"
+                                     previous_container="\$(docker ps -aq --filter name=$name)"
                                      echo Previous container: \$previous_container
                                      if [ -z \$previous_container ]; then echo "No container with that name."; else echo "Cleaning:." && docker stop \$previous_container && docker rm \$previous_container; fi 
                                      $dockerExecute
