@@ -35,7 +35,7 @@ def call(PipelineManager pipelineManager) {
                                      source ~/.bashrc
                                      source ~/.secrets  
                                      docker pull $projectName:latest   
-                                     if [ -z "\$(docker ps -aq --filter name=$name)" ]; then echo "No container with that name."; else echo "Cleaning:." && docker stop "\$(docker ps -aq --filter name=$name)" && docker rm "\$(docker ps -aq --filter name=$name)"; fi 
+                                     if [ -z "\$(docker ps -aq --filter name=^$name\$)" ]; then echo "No container with that name."; else echo "Cleaning:." && docker stop "\$(docker ps -aq --filter name=$name)" && docker rm "\$(docker ps -aq --filter name=$name)"; fi 
                                      $dockerExecute
                                      "
                                 """
