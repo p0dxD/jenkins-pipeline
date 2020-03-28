@@ -30,23 +30,18 @@ def call(PipelineManager pipelineManager) {
                                 // some block can be a groovy block as well and the variable will be available to the groovy script
                             String dockerExecute = "docker $command ${arguments.config_options} ${getPorts(arguments.ports)} ${getEnvironmentVariables(arguments.environment)} --name $name $projectName:latest"
                             echo "Command: $dockerExecute"
-                                // sh """
-                                //     ssh $mySecret "
-                                //      source ~/.bashrc
-                                //      source ~/.secrets  
-                                //      docker pull $projectName:latest   
-                                //      docker ps -a  
-                                //      docker ps -aq --filter "name=$name"
-                                //      previous_container=`docker ps -aq --filter "name=$name"`
-                                //      echo Previous container: \$previous_container
-                                //      if [ -z \$previous_container ]; then echo "No container with that name."; else echo "Cleaning:." && docker stop \$previous_container && docker rm \$previous_container; fi 
-                                //      $dockerExecute
-                                //      "
-                                // """
                                 sh """
-                                 ssh $mySecret << 'EOF'
-                                    echo "Test"
-                                EOF
+                                    ssh $mySecret "
+                                     source ~/.bashrc
+                                     source ~/.secrets  
+                                     docker pull $projectName:latest   
+                                     docker ps -a  
+                                     docker ps -aq --filter name=$name
+                                     previous_container="$(docker ps -aq --filter name=$name)"
+                                     echo Previous container: \$previous_container
+                                     if [ -z \$previous_container ]; then echo "No container with that name."; else echo "Cleaning:." && docker stop \$previous_container && docker rm \$previous_container; fi 
+                                     $dockerExecute
+                                     "
                                 """
                             }
                         }
