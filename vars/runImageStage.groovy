@@ -35,11 +35,7 @@ def call(PipelineManager pipelineManager) {
                                      source ~/.bashrc
                                      source ~/.secrets  
                                      docker pull $projectName:latest   
-                                     docker ps -a  
-                                     docker ps -aq --filter name=$name
-                                     export previous_container="\$(docker ps -aq --filter name=$name)"
-                                     echo Previous container: \$previous_container
-                                     if [ -z \$previous_container ]; then echo "No container with that name."; else echo "Cleaning:." && docker stop \$previous_container && docker rm \$previous_container; fi 
+                                     if [ -z "\$(docker ps -aq --filter name=$name)" ]; then echo "No container with that name."; else echo "Cleaning:." && docker stop "\$(docker ps -aq --filter name=$name)" && docker rm "\$(docker ps -aq --filter name=$name)"; fi 
                                      $dockerExecute
                                      "
                                 """
