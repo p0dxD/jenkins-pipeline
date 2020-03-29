@@ -17,6 +17,4 @@
 		fi
 	done < /home/.secrets
  done < <(find . -not \( -path ./.git -prune \) -type f -follow -print | grep -v "dockerfiles")
-
- exit 1
  
