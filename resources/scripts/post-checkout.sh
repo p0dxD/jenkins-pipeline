@@ -9,7 +9,6 @@
 		echo "Replacing: $variable"
 		value=$(echo "$LINE" | cut -f2 -d" " | cut -f2 -d"="| tr -d "'")
 		value=$(echo "${value//\//\\\/}")
-		echo "Value: $value"
  		if [ ! -z hide ]; then
 			sed -i -- "s/{{$variable}}/$value/g" $FILE_NAME
 		else
