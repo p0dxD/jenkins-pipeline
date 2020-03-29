@@ -6,7 +6,6 @@
 	while read LINE; 
  	do 
 		variable=$(echo "$LINE" | cut -f2 -d" " | cut -f1 -d"=")
-		echo "Replacing: $variable"
 		value=$(echo "$LINE" | cut -f2 -d" " | cut -f2 -d"="| tr -d "'")
 		value=$(echo "${value//\//\\\/}")
  		if [ ! -z hide ]; then
