@@ -93,5 +93,5 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
 }
 
 private void configureForFrontendFramework(String projectPath, String tool, String framework) {
-     stash name: "${projectPath}${tool}", excludes: 'node_modules/**/*'// it'll include all
+     stash name: "${projectPath}${tool}"//, excludes: 'node_modules/**/*'// it'll include all
 }
