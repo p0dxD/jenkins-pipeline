@@ -72,7 +72,7 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
     String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
     if(tool.equals("node")) {
         if (framework != null) {
-            configureForFrontendFramework(framework)
+            configureForFrontendFramework(projectPath, tool, framework)
         } else {
             stash name: "${projectPath}${tool}", includes: 'dist/**/*'
         }
@@ -92,6 +92,6 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
     } 
 }
 
-private void configureForFrontendFramework(String framework) {
+private void configureForFrontendFramework(String projectPath, String tool, String framework) {
      stash name: "${projectPath}${tool}", include: '**'// it'll include all
 }
