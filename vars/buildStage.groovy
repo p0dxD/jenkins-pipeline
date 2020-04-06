@@ -23,10 +23,10 @@ def call(PipelineManager pipelineManager){
                         echo "${projectConfiguration.values.stages.build}"
                         if(tool.equals("node")) {
                             sh "${tool} --version"
-                            sh "ls -la"
-                            error("Exiting early")
                             sh "npm install"
                             sh "npm run build"
+                            sh "ls -la"
+                            error("Exiting early")
                             saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
