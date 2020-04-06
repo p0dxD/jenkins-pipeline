@@ -26,7 +26,7 @@ def call(PipelineManager pipelineManager){
                             sh "${tool} --version"
                             sh "npm install"
                             sh "npm run build"
-                            saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
+                            saveConfigurationFiles(name, projectPath, tool, configurationsToKeep, framework)
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
                             sh "gradle clean build"
