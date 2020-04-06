@@ -23,6 +23,8 @@ def call(PipelineManager pipelineManager){
                         echo "${projectConfiguration.values.stages.build}"
                         if(tool.equals("node")) {
                             sh "${tool} --version"
+                            sh "ls -la frontend"
+                            error("Exiting early")
                             sh "npm install"
                             sh "npm run build"
                             saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
