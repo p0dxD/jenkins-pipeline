@@ -12,6 +12,7 @@ def call(PipelineManager pipelineManager){
         def tool = projectConfiguration.values.stages.build.tool
         def version = projectConfiguration.values.stages.build.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
+        def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
@@ -25,8 +26,6 @@ def call(PipelineManager pipelineManager){
                             sh "${tool} --version"
                             sh "npm install"
                             sh "npm run build"
-                            sh "ls -la"
-                            error("Exiting early")
                             saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
@@ -69,10 +68,14 @@ def call(PipelineManager pipelineManager){
 }
 
 
-private void saveConfigurationFiles(String projectName, String projectPath, String tool, def configurationsToKeep) {
+private void saveConfigurationFiles(String projectName, String projectPath, String tool, def configurationsToKeep, String framework = null) {
     String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
     if(tool.equals("node")) {
-        stash name: "${projectPath}${tool}", includes: 'dist/**/*'
+        if (framework != null) {
+            configureForFrontendFramework(framework)
+        } else {
+            stash name: "${projectPath}${tool}", includes: 'dist/**/*'
+        }
     } else if (tool.equals("gradle")) {
         stash name: "${projectPath}${tool}", includes: 'build/**/**'
     }  else if (tool.equals("golang") ) {
@@ -87,4 +90,8 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
             index = index + 1
         }
     } 
+}
+
+private void configureForFrontendFramework(String framework) {
+     stash name: "${projectPath}${tool}", include: '**'// it'll include all
 }

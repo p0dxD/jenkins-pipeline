@@ -19,6 +19,7 @@ def call(PipelineManager pipelineManager) {
                     dir ("${projectPath}${tool}") {
                         getConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                         sh "ls -la"
+                        error("Done")
                         String dockerfile = "Dockerfile"
                         def customImage = docker.build("${projectName}","-f dockerfiles/${dockerfile} .")
                         docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
