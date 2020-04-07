@@ -6,6 +6,7 @@ def call(){
         options {
             timestamps()
             skipDefaultCheckout()      // Don't checkout automatically
+            disableConcurrentBuilds()
         }        
         stages {
             stage('Checkout') {              
