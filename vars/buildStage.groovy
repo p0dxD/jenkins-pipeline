@@ -71,6 +71,7 @@ def call(PipelineManager pipelineManager){
 
 
 private void saveConfigurationFiles(String projectName, String projectPath, String tool, def configurationsToKeep, String framework = null) {
+    if ( projectPath.equals("") ) projectPath = "project"
     String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
     if(tool.equals("node")) {
         if (framework != null) {
