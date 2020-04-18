@@ -24,8 +24,10 @@ def call(PipelineManager pipelineManager){
                         echo "${projectConfiguration.values.stages.build}"
                         if(tool.equals("node")) {
                             sh "${tool} --version"
-                            sh "npm install"
-                            sh "npm run build"
+                            if (framework != "static") {
+                                sh "npm install"
+                                sh "npm run build"
+                            }
                             saveConfigurationFiles(name, projectPath, tool, configurationsToKeep, framework)
                         } else if (tool.equals("gradle")) {
                             sh "${tool} --version"
