@@ -1,61 +1,67 @@
+import space.joserod.pipeline.PipelineManager
 def call(){
-pipeline {
-    agent none
-    stages {
-        stage('Checkout') {
+    PipelineManager pipelineManager = PipelineManager.getInstance();
+    pipeline {
+        agent none
+        options {
+            timestamps()
+            skipDefaultCheckout()      // Don't checkout automatically
+            disableConcurrentBuilds()
+        }        
+        stages {
+            stage('Checkout') {              
                 agent { label "builder.ci.jenkins"}
-            steps {
-                script {
-                    cleanWs()
-                    checkout scm
-                    stash "workspace"
+                steps {
+                    script {
+                        pipelineManager.init()// init pipeline configuration and manager
+                        checkoutStage(pipelineManager)// initialize config, checkout code
+                    }
                 }
             }
-        }
-        stage('Post Chechout') {
+            stage('Post Chechout') {
+                when {
+                    expression { !pipelineManager.exitEarly() }
+                }  
                 agent { label "builder.ci.jenkins"}
-            steps {
-                script {
-                    cleanWs()
-                    unstash "workspace"
-                    def resourceContent = libraryResource("scripts/post-checkout.sh")
-                    writeFile(file: "post-checkout.sh", text: resourceContent)
-                    sh "bash post-checkout.sh"
-                    stash "workspace"
+                steps {
+                    script {
+                        postCheckoutStage(pipelineManager)
+                    }
                 }
             }
-        }
-        stage('build') {
+            stage('build') {
+                when {
+                    expression { !pipelineManager.exitEarly() }
+                }  
                 agent { label "builder.ci.jenkins"}
-            steps {
-                script {
-                    cleanWs()
-                    unstash "workspace"
-                    
-            withEnv(["GOPATH=$WORKSPACE", "GOBIN=$GOPATH/bin"]) {
-                sh "mkdir src bin && go get ./..."
-                env.PATH="${env.GOPATH}/bin:$PATH"
-                String repoName = scm.getUserRemoteConfigs()[0].getUrl().tokenize('/').last().split("\\.")[0]
-                sh "go get -d ./pkg/..."
-                sh "go install"
-                sh 'go build -o subway main.go'
-            
-                stash "workspace"
-            }
+                steps {
+                    script {
+                        buildStage(pipelineManager)
+                    }
                 }
             }
-        }
-        stage('Create image') {
+            stage('Create and push image') {
+                when {
+                    expression { !pipelineManager.exitEarly() }
+                }  
                 agent { label "builder.ci.jenkins"}
-            steps {
-                script {
-                    cleanWs()
-                    unstash "workspace"
-                    sh "cat ./docker/dockerize.sh"
-                    sh './docker/dockerize.sh'
+                steps {
+                    script {
+                        createImageStage(pipelineManager)
+                    }
+                }
+            }
+            stage('Run image') {
+                when {
+                    expression { !pipelineManager.exitEarly() && pipelineManager.getProjectConfigurations().getDockerConfigs().size() != 0 }
+                }  
+                agent { label "builder.ci.jenkins"}
+                steps {
+                    script {
+                        runImageStage(pipelineManager)
+                    }
                 }
             }
         }
     }
-}
 }

@@ -6,12 +6,13 @@
 	while read LINE; 
  	do 
 		variable=$(echo "$LINE" | cut -f2 -d" " | cut -f1 -d"=")
-		value=$(echo "$LINE" | cut -f2 -d" " | cut -f2 -d"="| tr -d '"')
+		value=$(echo "$LINE" | cut -f2 -d" " | cut -f2 -d"="| tr -d "'")
+		value=$(echo "${value//\//\\\/}")
  		if [ ! -z hide ]; then
-			sed -i -- "s/$variable/$value/g" $FILE_NAME
+			sed -i -- "s/{{$variable}}/$value/g" $FILE_NAME
 		else
-			sed -i -- "s/$value/$variable/g" $FILE_NAME
+			sed -i -- "s/$value/{{$variable}}/g" $FILE_NAME
 		fi
 	done < /home/.secrets
- done < <(find . -not \( -path ./.git -prune \) -type f -follow -print)
+ done < <(find . -not \( -path ./.git -prune \) -type f -follow -print | grep -v "dockerfiles")
  
