@@ -58,6 +58,8 @@ def call(PipelineManager pipelineManager){
                                     saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                                 }
                             }
+                        } else {
+                            saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                         }
                     }
                 }
@@ -83,6 +85,8 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
         stash name: "${projectPath}${tool}", includes: 'build/**/**'
     }  else if (tool.equals("golang") ) {
         stash name: "${projectPath}${tool}", includes: name
+    } else {
+        stash name: "${projectPath}${tool}", excludes: 'dockerfiles/**'
     }
     stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
     if ( configurationsToKeep != null ) {
