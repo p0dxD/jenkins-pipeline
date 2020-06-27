@@ -34,6 +34,14 @@ def call(PipelineManager pipelineManager){
                             sh "gradle clean build"
                             saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
                         } else if (tool.equals("golang") ) {
+                            def exists = fileExists 'go.mod'
+                            if (exists) {
+                                echo 'Has go.mod'
+                                sh "make build"
+                                saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
+                                return
+                            } 
+                            //below is for a build of previous go with path
                             String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
                             withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin", "PATH=$GOPATH/bin:$PATH"]) {
                                 String envPath = "${env.GOPATH}"
