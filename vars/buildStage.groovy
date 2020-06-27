@@ -42,7 +42,7 @@ def call(PipelineManager pipelineManager){
                                 return
                             } 
                             //below is for a build of previous go with path
-                            String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
+                            String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")//gopath doesnt like the @
                             withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin", "PATH=$GOPATH/bin:$PATH"]) {
                                 String envPath = "${env.GOPATH}"
                                 //does not have a path
