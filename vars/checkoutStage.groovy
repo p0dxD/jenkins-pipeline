@@ -10,6 +10,7 @@ def call(PipelineManager pipelineManager) {
 private void fillconfiguration(PipelineManager pipelineManager) {
     //Read configuration
     LinkedHashMap datas = readYaml file: 'configuration.yml'
+    boolean isStartedByUser = currentBuild.rawBuild.getCause(hudson.model.Cause$UserIdCause) != null
     //Adding project configuration
     for (Map.Entry<String, ArrayList<String>> entry : datas.entrySet()) {
         String key = entry.getKey();
@@ -22,8 +23,14 @@ private void fillconfiguration(PipelineManager pipelineManager) {
                 addDockerConfiguration(pipelineManager, project.name)
                 continue
             }
-            String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+ "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
-            String changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
+            String changesCmdOutput = ""
+            //if user triggers it build everything 
+            if (!isStartedByUser) {
+                String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+ "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
+                changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
+            } else {
+                changesCmdOutput = "Has changes."
+            }
             if (changesCmdOutput.equalsIgnoreCase('Has changes.')) {
                 pipelineManager.getProjectConfigurations().addProject(project.name, project)
                 echo "Added project with changes: " + project.name
