@@ -20,17 +20,17 @@ public class PipelineManager {
         configs = Config.getInstance()
     }
 
-//    private Config getProjectConfigurations() {
-//        return this.configs
-//    }
+   private Config getProjectConfigurations() {
+       return this.configs
+   }
 
-//    public void setExitEarly(boolean exitEarly) {
-//        this.exitEarly = exitEarly
-//    }
+   public void setExitEarly(boolean exitEarly) {
+       this.exitEarly = exitEarly
+   }
 
-//    public boolean exitEarly() {
-//        return this.exitEarly
-//    }
+   public boolean exitEarly() {
+       return this.exitEarly
+   }
 
 //    public void setDockerImageName(String dockerImageName) {
 //        this.dockerImageName = dockerImageName

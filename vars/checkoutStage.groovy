@@ -10,9 +10,21 @@ def call(final PipelineManager pipelineManager) {
 private void fillconfiguration(final PipelineManager pipelineManager) {
     //Read configuration
     def configuration = readYaml file: 'jenkinsconfig.yaml'
-    configuration.each{ k, v -> 
+    configuration.each{ k, projects -> 
         println "${k}:${v}"
-        
+        for(String project : projects) {
+            if (project.path == null) {
+                pipelineManager.getProjectConfigurations().addProject(project.name, project)
+                echo "Added project: " + project.name
+                continue
+            }
+            String changesCmd = 'if [ '+"${project.path}" + ' != "." ] && [ -z $(git diff HEAD^ HEAD  --name-only | grep '+ "${project.path}" + ') ]; then echo "Empty"; else echo "Has changes."; fi'
+            String changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
+            if (changesCmdOutput.equalsIgnoreCase('Has changes.')) {
+                pipelineManager.getProjectConfigurations().addProject(project.name, project)
+                echo "Added project with changes: " + project.name
+            }
+        }
      }
     // //Adding project configuration
     // for (Map.Entry<String, ArrayList<String>> entry : datas.entrySet()) {

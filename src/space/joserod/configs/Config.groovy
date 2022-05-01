@@ -19,10 +19,10 @@ public class Config {
       return config;
    }
 
-    // public void addProject(String name, LinkedHashMap values) {
-    //     ProjectConfiguration tmp = new ProjectConfiguration(values)
-    //     projects.put(name, tmp)
-    // }
+    public void addProject(String name, LinkedHashMap values) {
+        ProjectConfiguration tmp = new ProjectConfiguration(values)
+        projects.put(name, tmp)
+    }
 
     // public void addProject(String name, ProjectConfiguration project) {
     //     projects.put(name, tmp)

@@ -1,10 +1,10 @@
 package space.joserod.configs
 
 public class ProjectConfiguration {
-    private final String name
-    private final String version
-    private final String path
-    private final LinkedHashMap values
+    private String name
+    private String version
+    private String path
+    private LinkedHashMap values
 
     public ProjectConfiguration(final LinkedHashMap values) {
         this.name = values.name
