@@ -24,9 +24,9 @@ public class Config {
         projects.put(name, tmp)
     }
 
-    // public void addProject(String name, ProjectConfiguration project) {
-    //     projects.put(name, tmp)
-    // }
+    public void addProject(String name, ProjectConfiguration project) {
+        projects.put(name, tmp)
+    }
     // public void addDockerConfig(String name, LinkedHashMap values) {
     //     DockerConfiguration tmp = new DockerConfiguration(values)
     //     dockerConfigurations.put(name, tmp)
