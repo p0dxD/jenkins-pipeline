@@ -1,5 +1,6 @@
 import space.joserod.pipeline.PipelineManager
 def call(){
+    agent none
     PipelineManager pipelineManager = PipelineManager.getInstance();
     pipeline {
         agent none
@@ -9,8 +10,14 @@ def call(){
             disableConcurrentBuilds()
         }        
         stages {
-            stage('Checkout') {              
-                agent { label "kube-agent"}
+            stage('Checkout') {          
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        label 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }    
                 steps {
                     script {
                         pipelineManager.init()// init pipeline configuration and manager
