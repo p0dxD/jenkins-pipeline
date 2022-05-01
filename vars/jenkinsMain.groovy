@@ -20,7 +20,7 @@ def call(){
                 }
                 steps {
                     script {
-                        // pipelineManager.init()// init pipeline configuration and manager
+                        pipelineManager.init()// init pipeline configuration and manager
                         checkoutStage(pipelineManager)// initialize config, checkout code
                     }
                 }
