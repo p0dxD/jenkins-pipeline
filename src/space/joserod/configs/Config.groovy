@@ -5,12 +5,12 @@ import space.joserod.configs.ProjectConfiguration
 import space.joserod.configs.DockerConfiguration
 
 public class Config {
-    // private final HashMap<String, ProjectConfiguration> projects;
+    private final HashMap<String, ProjectConfiguration> projects;
     // private final HashMap<String, DockerConfiguration> dockerConfigurations;
     private static Config config = new Config();
 
     private Config() {
-        // projects = new HashMap<>()
+        projects = new HashMap<>()
         // dockerConfigurations = new HashMap<>()
     }
 
