@@ -13,7 +13,7 @@ def call(){
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
-                        label 'kube-agent'
+                        inheritFrom 'kube-agent'
                         slaveConnectTimeout 300
                         idleMinutes 5
                     }    
