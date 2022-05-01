@@ -4,7 +4,7 @@ import space.joserod.configs.Config
 
 public class PipelineManager {
     private Config configs
-    private final boolean exitEarly
+    private boolean exitEarly
     // private final String dockerImageName
     private static PipelineManager pipelineManager = new PipelineManager();
 
