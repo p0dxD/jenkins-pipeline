@@ -10,7 +10,7 @@ def call(final PipelineManager pipelineManager) {
 private void fillconfiguration(final PipelineManager pipelineManager) {
     //Read configuration
     final LinkedHashMap datas = readYaml file: 'jenkinsconfig.yaml'
-    print("Data", datas)
+    echo("Data", datas)
     // //Adding project configuration
     // for (Map.Entry<String, ArrayList<String>> entry : datas.entrySet()) {
     //     final String key = entry.getKey();
