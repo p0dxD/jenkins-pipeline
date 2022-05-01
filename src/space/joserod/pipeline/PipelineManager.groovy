@@ -20,7 +20,7 @@ public class PipelineManager {
         configs = Config.getInstance()
     }
 
-   private Config getProjectConfigurations() {
+   public Config getProjectConfigurations() {
        return this.configs
    }
 
