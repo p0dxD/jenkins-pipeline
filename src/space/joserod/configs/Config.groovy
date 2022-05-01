@@ -35,9 +35,9 @@ public class Config {
     // public void addDockerConfig(String name, DockerConfiguration project) {
     //     dockerConfigurations.put(name, tmp)
     // }
-    // public HashMap<String, ProjectConfiguration> getProjectsConfigs(){
-    //     return this.projects
-    // }
+    public HashMap<String, ProjectConfiguration> getProjectsConfigs(){
+        return this.projects
+    }
     // public HashMap<String, DockerConfiguration> getDockerConfigs(){
     //     return this.dockerConfigurations
     // }
