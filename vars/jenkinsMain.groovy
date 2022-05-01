@@ -10,7 +10,7 @@ def call(){
         }        
         stages {
             stage('Checkout') {              
-                agent { label env.POD_LABEL}
+                agent { label "kube-agent"}
                 steps {
                     script {
                         pipelineManager.init()// init pipeline configuration and manager
