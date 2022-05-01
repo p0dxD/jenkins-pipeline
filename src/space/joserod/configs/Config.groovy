@@ -7,7 +7,7 @@ import space.joserod.configs.DockerConfiguration
 public class Config {
     // private final HashMap<String, ProjectConfiguration> projects;
     // private final HashMap<String, DockerConfiguration> dockerConfigurations;
-    private final static Config config = new Config();
+    private static Config config = new Config();
 
     private Config() {
         // projects = new HashMap<>()
