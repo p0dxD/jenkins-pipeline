@@ -10,7 +10,7 @@ def call(){
         }        
         stages {
             stage('Checkout') {              
-                agent { label "builder.ci.jenkins"}
+                agent { label env.POD_LABEL}
                 steps {
                     script {
                         pipelineManager.init()// init pipeline configuration and manager
