@@ -18,50 +18,50 @@ def call(){
                     }
                 }
             }
-            stage('Post Chechout') {
-                when {
-                    expression { !pipelineManager.exitEarly() }
-                }  
-                agent { label "builder.ci.jenkins"}
-                steps {
-                    script {
-                        postCheckoutStage(pipelineManager)
-                    }
-                }
-            }
-            stage('build') {
-                when {
-                    expression { !pipelineManager.exitEarly() }
-                }  
-                agent { label "builder.ci.jenkins"}
-                steps {
-                    script {
-                        buildStage(pipelineManager)
-                    }
-                }
-            }
-            stage('Create and push image') {
-                when {
-                    expression { !pipelineManager.exitEarly() }
-                }  
-                agent { label "builder.ci.jenkins"}
-                steps {
-                    script {
-                        createImageStage(pipelineManager)
-                    }
-                }
-            }
-            stage('Run image') {
-                when {
-                    expression { !pipelineManager.exitEarly() && pipelineManager.getProjectConfigurations().getDockerConfigs().size() != 0 }
-                }  
-                agent { label "builder.ci.jenkins"}
-                steps {
-                    script {
-                        runImageStage(pipelineManager)
-                    }
-                }
-            }
+            // stage('Post Chechout') {
+            //     when {
+            //         expression { !pipelineManager.exitEarly() }
+            //     }  
+            //     agent { label "builder.ci.jenkins"}
+            //     steps {
+            //         script {
+            //             postCheckoutStage(pipelineManager)
+            //         }
+            //     }
+            // }
+            // stage('build') {
+            //     when {
+            //         expression { !pipelineManager.exitEarly() }
+            //     }  
+            //     agent { label "builder.ci.jenkins"}
+            //     steps {
+            //         script {
+            //             buildStage(pipelineManager)
+            //         }
+            //     }
+            // }
+            // stage('Create and push image') {
+            //     when {
+            //         expression { !pipelineManager.exitEarly() }
+            //     }  
+            //     agent { label "builder.ci.jenkins"}
+            //     steps {
+            //         script {
+            //             createImageStage(pipelineManager)
+            //         }
+            //     }
+            // }
+            // stage('Run image') {
+            //     when {
+            //         expression { !pipelineManager.exitEarly() && pipelineManager.getProjectConfigurations().getDockerConfigs().size() != 0 }
+            //     }  
+            //     agent { label "builder.ci.jenkins"}
+            //     steps {
+            //         script {
+            //             runImageStage(pipelineManager)
+            //         }
+            //     }
+            // }
         }
     }
 }

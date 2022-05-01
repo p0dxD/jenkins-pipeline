@@ -3,10 +3,10 @@ package space.joserod.pipeline
 import space.joserod.configs.Config
 
 public class PipelineManager {
-    private Config configs
-    private boolean exitEarly
-    private String dockerImageName
-    private static PipelineManager pipelineManager = new PipelineManager();
+    private final Config configs
+    private final boolean exitEarly
+    private final String dockerImageName
+    private final static PipelineManager pipelineManager = new PipelineManager();
 
     private PipelineManager() {
     }

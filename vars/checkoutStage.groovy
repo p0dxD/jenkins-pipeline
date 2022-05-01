@@ -1,19 +1,19 @@
 import space.joserod.pipeline.PipelineManager
 
-def call(PipelineManager pipelineManager) {
+def call(final PipelineManager pipelineManager) {
     cleanWs()
     checkout scm 
-    fillconfiguration(pipelineManager)
+    // fillconfiguration(pipelineManager)
     stash "workspace"
 }
 
-private void fillconfiguration(PipelineManager pipelineManager) {
+private void fillconfiguration(final PipelineManager pipelineManager) {
     //Read configuration
-    LinkedHashMap datas = readYaml file: 'configuration.yml'
+    final LinkedHashMap datas = readYaml file: 'configuration.yml'
     //Adding project configuration
     for (Map.Entry<String, ArrayList<String>> entry : datas.entrySet()) {
-        String key = entry.getKey();
-        ArrayList<String> value = entry.getValue();
+        final String key = entry.getKey();
+        final ArrayList<String> value = entry.getValue();
         for(String project : value) {
             //check the diffs if there isnt a change we can just return the pipeline, doesn't need to build.
             if (project.path == null) {
