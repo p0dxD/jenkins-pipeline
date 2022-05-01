@@ -29,7 +29,7 @@ private void fillconfiguration(final PipelineManager pipelineManager) {
         }
      }
 
-    if (pipelineManager.getProjectConfigurations().getProjectsConfigs().size() == 0) {
+    if (pipelineManager.getProjectConfigurations().size() == 0) {
         //we exit pipeline there's no changes, why build? unless triggered by hand. 
         echo "We found one."
         pipelineManager.setExitEarly(true)// we want to skip other stages
