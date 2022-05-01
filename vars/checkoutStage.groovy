@@ -10,9 +10,9 @@ def call(final PipelineManager pipelineManager) {
 private void fillconfiguration(final PipelineManager pipelineManager) {
     //Read configuration
     def configuration = readYaml file: 'jenkinsconfig.yaml'
-    configuration.each{ k, v -> {
+    configuration.each{ k, v -> 
         println "${k}:${v}"
-        } 
+        
      }
     // //Adding project configuration
     // for (Map.Entry<String, ArrayList<String>> entry : datas.entrySet()) {
