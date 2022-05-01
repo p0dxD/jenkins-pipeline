@@ -17,6 +17,7 @@ def call(){
                         slaveConnectTimeout 300
                         idleMinutes 5
                     }    
+                }
                 steps {
                     script {
                         pipelineManager.init()// init pipeline configuration and manager
