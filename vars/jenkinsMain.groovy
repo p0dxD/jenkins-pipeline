@@ -1,6 +1,5 @@
 import space.joserod.pipeline.PipelineManager
 def call(){
-    agent none
     PipelineManager pipelineManager = PipelineManager.getInstance();
     pipeline {
         agent none
