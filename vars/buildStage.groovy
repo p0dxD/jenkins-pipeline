@@ -18,7 +18,7 @@ def call(PipelineManager pipelineManager){
             podTemplate(containers: [
                 containerTemplate(
                     name: 'node', 
-                    image: 'node:latest', 
+                    image: 'node:lts-alpine', 
                     command: 'sleep', 
                     args: '30d'
                     ),
@@ -40,11 +40,13 @@ def call(PipelineManager pipelineManager){
                 container('node') {
                     stage('Build a node project') {
                         unstash "workspace"
+                        dir(projectPath) {
                         echo "Doing node build."
                         sh '''
                         npm install
                         npm run build
                         '''
+                        }
                     }
                 }
             }
