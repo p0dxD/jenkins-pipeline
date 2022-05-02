@@ -15,7 +15,7 @@ def call(PipelineManager pipelineManager){
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
-            node('kube-agent') {
+            node(POD_LABEL) {
                 sh "It is working inside build"
             // docker.image("${tool}:${version}").inside {
             //     stage("${projectName}") {
