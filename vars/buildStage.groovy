@@ -14,20 +14,10 @@ def call(PipelineManager pipelineManager){
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
+        def templateExample = containerTemplate(name: 'node', image: 'node:lts-alpine', command: 'sleep', args: '30d')
+        def templateExampleTwo = containerTemplate(name: 'python', image: 'python:latest', command: 'sleep', args: '30d')
         projects["${projectName}"] = {
-            podTemplate(containers: [
-                containerTemplate(
-                    name: 'node', 
-                    image: 'node:lts-alpine', 
-                    command: 'sleep', 
-                    args: '30d'
-                    ),
-                containerTemplate(
-                    name: 'python', 
-                    image: 'python:latest', 
-                    command: 'sleep', 
-                    args: '30d')
-                ],
+            podTemplate(containers: [templateExample, templateExampleTwo],
                 volumes: [
                 persistentVolumeClaim(
                 //   mountPath: '/root/.m2/repository', 
