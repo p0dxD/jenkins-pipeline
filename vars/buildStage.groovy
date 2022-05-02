@@ -15,14 +15,16 @@ def call(PipelineManager pipelineManager){
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         //TODO: Move this to the configure stage/checkout
-        def templateExample = containerTemplate(projectConfiguration.values.stages.build)
-        def templateExampleTwo = containerTemplate(name: 'python', image: 'python:latest', command: 'sleep', args: '30d')
-        def volume = persistentVolumeClaim(mountPath: '/root/.npm', claimName: 'maven-storage', readOnly: false)
+        def containerName = projectConfiguration.values.stages.build.container.name
+        // def templateExample = containerTemplate(projectConfiguration.values.stages.build.container)
+        // def templateExampleTwo = containerTemplate(name: 'python', image: 'python:latest', command: 'sleep', args: '30d')
+        // def volume = persistentVolumeClaim(projectConfiguration.values.stages.build.volume)
         projects["${projectName}"] = {
-            podTemplate(containers: [templateExample, templateExampleTwo], volumes: [volume]) {
+            podTemplate(containers: [containerTemplate(projectConfiguration.values.stages.build.container)],
+                        volumes: [persistentVolumeClaim(projectConfiguration.values.stages.build.volume)]) {
             node(POD_LABEL) {
-                container('node') {
-                    stage('Build a node project') {
+                container(containerName) {
+                    stage('Building ' + name + ' project') {
                         unstash "workspace"
                         dir(projectPath) {
                         echo "Doing node build."
