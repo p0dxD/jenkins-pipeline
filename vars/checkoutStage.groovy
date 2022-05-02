@@ -10,6 +10,7 @@ def call(final PipelineManager pipelineManager) {
 private void fillconfiguration(final PipelineManager pipelineManager) {
     //Read configuration
     def configuration = readYaml file: 'jenkinsconfig.yaml'
+    def isTriggeredByUser = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').size()
     configuration.each{ k, projects -> 
         for(String project : projects) {
             if (project.path == null) {
@@ -22,7 +23,7 @@ private void fillconfiguration(final PipelineManager pipelineManager) {
             echo "Adding project 1."
             String changesCmdOutput = sh(script: changesCmd, returnStdout: true).trim()
             echo "Adding project 2."
-            if (changesCmdOutput.equalsIgnoreCase('Has changes.')) {
+            if (changesCmdOutput.equalsIgnoreCase('Has changes.') || isTriggeredByUser) {
                 pipelineManager.getProjectConfigurations().addProject(project.name, project)
                 echo "Added project with changes: " + project.name
             }
