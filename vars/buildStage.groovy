@@ -38,9 +38,14 @@ def call(PipelineManager pipelineManager){
                 ]) {
             node(POD_LABEL) {
                 container('node') {
-                stage('Build a node project') {
-                echo "It is working inside build"
-                }
+                    stage('Build a node project') {
+                        unstash "workspace"
+                        echo "Doing node build."
+                        sh '''
+                        npm install
+                        npm run build
+                        '''
+                    }
                 }
             }
             // docker.image("${tool}:${version}").inside {
