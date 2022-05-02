@@ -8,60 +8,61 @@ def call(PipelineManager pipelineManager){
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
-         ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-        def tool = projectConfiguration.values.stages.build.tool
+        ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
+        def image = projectConfiguration.values.stages.build.image
         def version = projectConfiguration.values.stages.build.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
-            node("builder.ci.jenkins") {
-            docker.image("${tool}:${version}").inside {
-                stage("${projectName}") {
-                    cleanWs()
-                    unstash "workspace"
-                    dir(projectPath) {
-                        echo "${projectConfiguration.values.stages.build}"
-                        if(tool.equals("node")) {
-                            sh "${tool} --version"
-                            if (framework != "static") {
-                                sh "npm install"
-                                sh "npm run build"
-                            }
-                            saveConfigurationFiles(name, projectPath, tool, configurationsToKeep, framework)
-                        } else if (tool.equals("gradle")) {
-                            sh "${tool} --version"
-                            sh "gradle clean build"
-                            saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
-                        } else if (tool.equals("golang") ) {
-                            String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
-                            withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin", "PATH=$GOPATH/bin:$PATH"]) {
-                                String envPath = "${env.GOPATH}"
-                                //does not have a path
-                                sh "mkdir -p ${envPath}"
-                                if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
-                                    sh "rm -Rf $envPath/project && mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
-                                    projectPath="project"
-                                } else {
-                                    sh "rm -Rf $envPath/$projectPath && mkdir -p $envPath/$projectPath && chmod a+rwx $envPath/$projectPath && mv \$(pwd)/$projectPath/* $envPath/$projectPath/"
-                                } 
-                                dir (envPath+"/"+projectPath) {// /home/go/{projectname}
-                                    sh "mkdir src bin && go get ./..."
-                                    sh "go version"
-                                    int checkforPkgFolder = sh(script: "[ -d 'pkg' ]", returnStatus: true)
-                                    if ( checkforPkgFolder == 0) {
-                                        sh "go get -d ./pkg/..."
-                                    }
-                                    sh "go install"
-                                    sh "go build -o ${name} main.go"
+            node('kube-agent') {
+                sh "It is working inside build"
+            // docker.image("${tool}:${version}").inside {
+            //     stage("${projectName}") {
+            //         cleanWs()
+            //         unstash "workspace"
+            //         dir(projectPath) {
+            //             echo "${projectConfiguration.values.stages.build}"
+            //             if(tool.equals("node")) {
+            //                 sh "${tool} --version"
+            //                 if (framework != "static") {
+            //                     sh "npm install"
+            //                     sh "npm run build"
+            //                 }
+            //                 saveConfigurationFiles(name, projectPath, tool, configurationsToKeep, framework)
+            //             } else if (tool.equals("gradle")) {
+            //                 sh "${tool} --version"
+            //                 sh "gradle clean build"
+            //                 saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
+            //             } else if (tool.equals("golang") ) {
+            //                 String newWorkspaceTmp = "${WORKSPACE}".replaceAll("@","_")
+            //                 withEnv(["GOPATH=${newWorkspaceTmp}", "GOBIN=$GOPATH/bin", "PATH=$GOPATH/bin:$PATH"]) {
+            //                     String envPath = "${env.GOPATH}"
+            //                     //does not have a path
+            //                     sh "mkdir -p ${envPath}"
+            //                     if ( projectPath.equals("") ) {//we are in a unique situation we move current project into a folder
+            //                         sh "rm -Rf $envPath/project && mkdir -p $envPath/project && chmod a+rwx $envPath/project && mv \$(pwd)/* $envPath/project/"
+            //                         projectPath="project"
+            //                     } else {
+            //                         sh "rm -Rf $envPath/$projectPath && mkdir -p $envPath/$projectPath && chmod a+rwx $envPath/$projectPath && mv \$(pwd)/$projectPath/* $envPath/$projectPath/"
+            //                     } 
+            //                     dir (envPath+"/"+projectPath) {// /home/go/{projectname}
+            //                         sh "mkdir src bin && go get ./..."
+            //                         sh "go version"
+            //                         int checkforPkgFolder = sh(script: "[ -d 'pkg' ]", returnStatus: true)
+            //                         if ( checkforPkgFolder == 0) {
+            //                             sh "go get -d ./pkg/..."
+            //                         }
+            //                         sh "go install"
+            //                         sh "go build -o ${name} main.go"
 
-                                    saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
-                                }
-                            }
-                        }
-                    }
-                }
-                }
+            //                         saveConfigurationFiles(name, projectPath, tool, configurationsToKeep)
+            //                     }
+            //                 }
+            //             }
+            //         }
+            //     }
+            //     }
             }
         }
     

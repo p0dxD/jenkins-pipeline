@@ -36,17 +36,24 @@ def call(){
             //         }
             //     }
             // }
-            // stage('build') {
-            //     when {
-            //         expression { !pipelineManager.exitEarly() }
-            //     }  
-            //     agent { label "builder.ci.jenkins"}
-            //     steps {
-            //         script {
-            //             buildStage(pipelineManager)
-            //         }
-            //     }
-            // }
+            stage('build') {
+                when {
+                    expression { !pipelineManager.exitEarly() }
+                }  
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }    
+                }
+                steps {
+                    script {
+                        buildStage(pipelineManager)
+                    }
+                }
+            }
             // stage('Create and push image') {
             //     when {
             //         expression { !pipelineManager.exitEarly() }
