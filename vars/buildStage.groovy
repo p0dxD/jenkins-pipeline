@@ -10,15 +10,10 @@ def call(PipelineManager pipelineManager){
         def projectName = v.name
         ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
         def image = projectConfiguration.values.stages.build.image
-        // def version = projectConfiguration.values.stages.build.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
-        //TODO: Move this to the configure stage/checkout
         def containerName = projectConfiguration.values.stages.build.container.name
-        // def templateExample = containerTemplate(projectConfiguration.values.stages.build.container)
-        // def templateExampleTwo = containerTemplate(name: 'python', image: 'python:latest', command: 'sleep', args: '30d')
-        // def volume = persistentVolumeClaim(projectConfiguration.values.stages.build.volume)
         projects["${projectName}"] = {
             podTemplate(containers: [containerTemplate(projectConfiguration.values.stages.build.container)],
                         volumes: [persistentVolumeClaim(projectConfiguration.values.stages.build.volume)]) {
@@ -28,10 +23,12 @@ def call(PipelineManager pipelineManager){
                         unstash "workspace"
                         dir(projectPath) {
                         echo "Doing node build."
+                        //TODO: the script will depend on the type of project..
                         sh '''
                         npm install
                         npm run build
                         '''
+                        //TODO: stash just the result, based on project name..
                         }
                     }
                 }
