@@ -15,8 +15,34 @@ def call(PipelineManager pipelineManager){
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
+            podTemplate(containers: [
+                containerTemplate(
+                    name: 'node', 
+                    image: 'node:latest', 
+                    command: 'sleep', 
+                    args: '30d'
+                    ),
+                containerTemplate(
+                    name: 'python', 
+                    image: 'python:latest', 
+                    command: 'sleep', 
+                    args: '30d')
+                ],
+                volumes: [
+                persistentVolumeClaim(
+                //   mountPath: '/root/.m2/repository', 
+                    mountPath: '/root/.npm',
+                    claimName: 'maven-storage', 
+                    readOnly: false
+                    )
+                ]) {
             node(POD_LABEL) {
-                sh "It is working inside build"
+                container('node') {
+                stage('Build a node project') {
+                echo "It is working inside build"
+                }
+                }
+            }
             // docker.image("${tool}:${version}").inside {
             //     stage("${projectName}") {
             //         cleanWs()
