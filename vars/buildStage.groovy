@@ -22,13 +22,12 @@ def call(PipelineManager pipelineManager){
                     stage('Building ' + name + ' project') {
                         unstash "workspace"
                         dir(projectPath) {
-                        echo "Doing node build."
-                        //TODO: the script will depend on the type of project..
-                        sh '''
-                        npm install
-                        npm run build
-                        '''
-                        //TODO: stash just the result, based on project name..
+                            echo "Doing ${containerName} build."
+                            def resourceContent = libraryResource("scripts/${containerName}.sh")
+                            writeFile(file: "${containerName}.sh", text: resourceContent)
+                            sh "bash ${containerName}.sh"
+                            // Stash configuration, and needed files
+                            saveConfigurationFiles(projectName, projectPath, containerName)
                         }
                     }
                 }
@@ -41,7 +40,7 @@ def call(PipelineManager pipelineManager){
 }
 
 
-private void saveConfigurationFiles(String projectName, String projectPath, String tool, def configurationsToKeep, String framework = null) {
+private void saveConfigurationFiles(String projectName, String projectPath, String tool, def configurationsToKeep = null, String framework = null) {
     if ( projectPath.equals("") ) projectPath = "project"
     String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
     if(tool.equals("node")) {
@@ -55,7 +54,7 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
     }  else if (tool.equals("golang") ) {
         stash name: "${projectPath}${tool}", includes: name
     }
-    stash name: "${projectPath}${tool}docker", includes: 'dockerfiles/**'
+    stash name: "${projectPath}${tool}docker", includes: 'Dockerfile'
     if ( configurationsToKeep != null ) {
         int index = 0
         for (String config : configurationsToKeep) {
