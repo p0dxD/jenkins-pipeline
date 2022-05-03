@@ -26,7 +26,7 @@ def call(PipelineManager pipelineManager){
                             def resourceContent = libraryResource("scripts/${containerName}.sh")
                             writeFile(file: "${containerName}.sh", text: resourceContent)
                             sh "ls -la"
-                            sh "./${containerName}.sh"
+                            sh "chmod +x ${containerName}.sh && ./${containerName}.sh"
                             // Stash configuration, and needed files
                             saveConfigurationFiles(projectName, projectPath, containerName)
                         }
