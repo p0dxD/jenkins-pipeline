@@ -8,7 +8,7 @@ def call(PipelineManager pipelineManager) {
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-        def image = projectConfiguration.values.stages.build.image
+        def imageName = projectConfiguration.values.stages.build.image
         def version = projectConfiguration.values.stages.build.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
@@ -19,8 +19,8 @@ def call(PipelineManager pipelineManager) {
                 container('kaniko') {
                     stage('Creating image ' + name) {
                     cleanWs()
-                    dir ("${projectPath}${image}") {
-                        getConfigurationFiles(name, projectPath, image, configurationsToKeep)
+                    // dir ("${projectPath}${imageName}") {
+                        getConfigurationFiles(name, projectPath, imageName, configurationsToKeep)
                         sh 'ls -la'
                         sh '/kaniko/executor --dockerfile=Dockerfile\
                                 --destination=ghcr.io/p0dxd/joserod.space:latest \
@@ -34,7 +34,7 @@ def call(PipelineManager pipelineManager) {
                         // def customImage = docker.build("${projectName}","-f dockerfiles/${dockerfile} .")
                         // docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
                         //     customImage.push('latest')
-                        }
+                        // }
                     }
                 }
                 }
@@ -46,7 +46,7 @@ def call(PipelineManager pipelineManager) {
     parallel projects
 }
 
-private void getConfigurationFiles(String name, String projectPath, String tool, def configurationsToKeep) {
+private void getConfigurationFiles(String name, String projectPath, String tool, def configurationsToKeep = null) {
     if ( projectPath.equals("") ) projectPath = "project"
     unstash "${projectPath}${tool}"
     unstash "${projectPath}${tool}docker"
