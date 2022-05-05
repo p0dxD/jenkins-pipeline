@@ -9,7 +9,7 @@ def call(PipelineManager pipelineManager){
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
         ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-        // def image = projectConfiguration.values.stages.build.image
+        // def image = projectConfiguration.values.stages.build.container.name
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
@@ -28,7 +28,7 @@ def call(PipelineManager pipelineManager){
                             writeFile(file: "${containerName}.sh", text: resourceContent)
                             sh "chmod +x ${containerName}.sh && ./${containerName}.sh"
                             // Stash configuration, and needed files
-                            saveConfigurationFiles(projectName, projectPath, stashName)
+                            saveConfigurationFiles(projectName, projectPath, containerName, stashName)
                         }
                     }
                 }
@@ -41,33 +41,33 @@ def call(PipelineManager pipelineManager){
 }
 
 
-private void saveConfigurationFiles(String projectName, String projectPath, String tool, def configurationsToKeep = null, String framework = null) {
+private void saveConfigurationFiles(String projectName, String projectPath, String tool, String stashName, def configurationsToKeep = null, String framework = null) {
     echo "Will stash on: ${projectPath}${tool}"
     if ( projectPath.equals("") ) projectPath = "project"
     String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
     if(tool.equals("node")) {
         if (framework != null) {
-            configureForFrontendFramework(projectPath, tool, framework)
+            configureForFrontendFramework(projectPath, stashName, framework)
         } else {
             sh "ls -la"
-            stash name: "${projectPath}${tool}", includes: 'dist/**/*'
+            stash name: "${projectPath}${stashName}", includes: 'dist/**/*'
         }
     } else if (tool.equals("gradle")) {
-        stash name: "${projectPath}${tool}", includes: 'build/**/**'
+        stash name: "${projectPath}${stashName}", includes: 'build/**/**'
     }  else if (tool.equals("golang") ) {
-        stash name: "${projectPath}${tool}", includes: name
+        stash name: "${projectPath}${stashName}", includes: name
     }
-    stash name: "${projectPath}${tool}docker", includes: 'Dockerfile'
+    stash name: "${projectPath}${stashName}docker", includes: 'Dockerfile'
     if ( configurationsToKeep != null ) {
         int index = 0
         for (String config : configurationsToKeep) {
             echo "Config: " + config
-            stash name: "${projectPath}${tool}${index}", includes: config
+            stash name: "${projectPath}${stashName}${index}", includes: config
             index = index + 1
         }
     } 
 }
 
-private void configureForFrontendFramework(String projectPath, String tool, String framework) {
-     stash name: "${projectPath}${tool}"//, excludes: 'node_modules/**/*'// it'll include all
+private void configureForFrontendFramework(String projectPath, String stashName, String framework) {
+     stash name: "${projectPath}${stashName}"//, excludes: 'node_modules/**/*'// it'll include all
 }
