@@ -23,9 +23,7 @@ def call(PipelineManager pipelineManager) {
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
                         sh '/kaniko/executor --dockerfile=Dockerfile\
-                                --destination=ghcr.io/p0dxd/joserod.space:latest \
-                                --insecure \
-                                --skip-tls-verify  \
+                                --destination=ghcr.io/p0dxD/joserod.space:latest \
                                 -v=debug'
 
                         // getConfigurationFiles(name, projectPath, image, configurationsToKeep)
