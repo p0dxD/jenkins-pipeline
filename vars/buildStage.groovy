@@ -9,11 +9,12 @@ def call(PipelineManager pipelineManager){
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
         ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-        def image = projectConfiguration.values.stages.build.image
+        // def image = projectConfiguration.values.stages.build.image
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         def containerName = projectConfiguration.values.stages.build.container.name
+        def stashName = projectConfiguration.values.stashName
         projects["${projectName}"] = {
             podTemplate(containers: [containerTemplate(projectConfiguration.values.stages.build.container)],
                         volumes: [persistentVolumeClaim(projectConfiguration.values.stages.build.volume)]) {
@@ -27,7 +28,7 @@ def call(PipelineManager pipelineManager){
                             writeFile(file: "${containerName}.sh", text: resourceContent)
                             sh "chmod +x ${containerName}.sh && ./${containerName}.sh"
                             // Stash configuration, and needed files
-                            saveConfigurationFiles(projectName, projectPath, containerName)
+                            saveConfigurationFiles(projectName, projectPath, stashName)
                         }
                     }
                 }

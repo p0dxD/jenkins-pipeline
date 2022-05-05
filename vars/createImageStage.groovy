@@ -8,8 +8,8 @@ def call(PipelineManager pipelineManager) {
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-        def imageName = projectConfiguration.values.stages.build.image
-        def version = projectConfiguration.values.stages.build.version
+        def stashName = projectConfiguration.values.stashName
+        def version = projectConfiguration.values.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
@@ -20,7 +20,7 @@ def call(PipelineManager pipelineManager) {
                     stage('Creating image ' + name) {
                     cleanWs()
                     // dir ("${projectPath}${imageName}") {
-                        getConfigurationFiles(name, projectPath, imageName, configurationsToKeep)
+                        getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
                         sh '/kaniko/executor --dockerfile=Dockerfile\
                                 --destination=ghcr.io/p0dxd/joserod.space:latest \
