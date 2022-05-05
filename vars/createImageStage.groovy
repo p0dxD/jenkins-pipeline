@@ -8,24 +8,39 @@ def call(PipelineManager pipelineManager) {
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-        def tool = projectConfiguration.values.stages.build.tool
+        def image = projectConfiguration.values.stages.build.image
         def version = projectConfiguration.values.stages.build.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
-            node("builder.ci.jenkins") {
-                stage("${projectName}") {
+            podTemplate(label: label, containers: [
+ containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)
+],
+volumes: [
+   secretVolume(mountPath: '/root/.docker/', secretName: 'regcred')
+]) {
+            node(POD_LABEL) {
+                container('kaniko') {
+                    stage('Creating image ' + name) {
                     cleanWs()
-                    dir ("${projectPath}${tool}") {
-                        getConfigurationFiles(name, projectPath, tool, configurationsToKeep)
-                        sh "ls -la"
-                        String dockerfile = "Dockerfile"
-                        def customImage = docker.build("${projectName}","-f dockerfiles/${dockerfile} .")
-                        docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
-                            customImage.push('latest')
+                    dir ("${projectPath}${image}") {
+                        sh '/kaniko/executor \
+                                --destination=ghcr.io/p0dxd/joserod.space:latest \
+                                --insecure \
+                                --skip-tls-verify  \
+                                -v=debug'
+
+                        // getConfigurationFiles(name, projectPath, image, configurationsToKeep)
+                        // sh "ls -la"
+                        // String dockerfile = "Dockerfile"
+                        // def customImage = docker.build("${projectName}","-f dockerfiles/${dockerfile} .")
+                        // docker.withRegistry('https://registry.hub.docker.com', 'docker-hub-credentials') {
+                        //     customImage.push('latest')
                         }
                     }
                 }
+                }
+            }
             }
         }
     
@@ -46,3 +61,25 @@ private void getConfigurationFiles(String name, String projectPath, String tool,
         }
     } 
 }
+
+
+// def label = "goweb-1.$BUILD_NUMBER-pipeline"
+ 
+// podTemplate(label: label, containers: [
+//  containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)
+// ],
+// volumes: [
+//    secretVolume(mountPath: '/root/.docker/', secretName: 'dockercred')
+// ]) {
+//  node(label) {
+//    stage('Stage 1: Build with Kaniko') {
+//      container('kaniko') {
+//        sh '/kaniko/executor --context=git://github.com/repository/project.git \
+//                --destination=docker.io/repository/image:tag \
+//                --insecure \
+//                --skip-tls-verify  \
+//                -v=debug'
+//      }
+//    }
+//  }
+// }
