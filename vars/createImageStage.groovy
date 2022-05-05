@@ -20,7 +20,9 @@ def call(PipelineManager pipelineManager) {
                     stage('Creating image ' + name) {
                     cleanWs()
                     dir ("${projectPath}${image}") {
-                        sh '/kaniko/executor \
+                        getConfigurationFiles(name, projectPath, image, configurationsToKeep)
+                        sh 'ls -la'
+                        sh '/kaniko/executor --dockerfile=Dockerfile\
                                 --destination=ghcr.io/p0dxd/joserod.space:latest \
                                 --insecure \
                                 --skip-tls-verify  \
