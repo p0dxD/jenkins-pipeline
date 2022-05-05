@@ -54,17 +54,24 @@ def call(){
                     }
                 }
             }
-            // stage('Create and push image') {
-            //     when {
-            //         expression { !pipelineManager.exitEarly() }
-            //     }  
-            //     agent { label "builder.ci.jenkins"}
-            //     steps {
-            //         script {
-            //             createImageStage(pipelineManager)
-            //         }
-            //     }
-            // }
+            stage('Create and push image') {
+                when {
+                    expression { !pipelineManager.exitEarly() }
+                }  
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }    
+                }
+                steps {
+                    script {
+                        createImageStage(pipelineManager)
+                    }
+                }
+            }
             // stage('Run image') {
             //     when {
             //         expression { !pipelineManager.exitEarly() && pipelineManager.getProjectConfigurations().getDockerConfigs().size() != 0 }
