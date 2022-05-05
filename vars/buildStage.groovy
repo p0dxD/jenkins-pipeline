@@ -42,6 +42,7 @@ def call(PipelineManager pipelineManager){
 
 
 private void saveConfigurationFiles(String projectName, String projectPath, String tool, def configurationsToKeep = null, String framework = null) {
+    echo "Will stash on: ${projectPath}${tool}"
     if ( projectPath.equals("") ) projectPath = "project"
     String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
     if(tool.equals("node")) {
