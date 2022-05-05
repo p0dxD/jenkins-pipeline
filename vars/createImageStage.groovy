@@ -13,12 +13,8 @@ def call(PipelineManager pipelineManager) {
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
-            podTemplate(label: label, containers: [
- containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)
-],
-volumes: [
-   secretVolume(mountPath: '/root/.docker/', secretName: 'regcred')
-]) {
+        podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)],
+                    volumes: [secretVolume(mountPath: '/root/.docker/', secretName: 'regcred')]) {
             node(POD_LABEL) {
                 container('kaniko') {
                     stage('Creating image ' + name) {
