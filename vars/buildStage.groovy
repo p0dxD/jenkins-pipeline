@@ -49,6 +49,7 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
         if (framework != null) {
             configureForFrontendFramework(projectPath, tool, framework)
         } else {
+            sh "ls -la"
             stash name: "${projectPath}${tool}", includes: 'dist/**/*'
         }
     } else if (tool.equals("gradle")) {
