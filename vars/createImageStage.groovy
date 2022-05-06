@@ -14,7 +14,7 @@ def call(PipelineManager pipelineManager) {
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
         podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)],
-                    volumes: [secretVolume(mountPath: '/kaniko/.docker', secretName: 'regcred')]) {
+                    volumes: [secretVolume(mountPath: '/kaniko/.docker', secretName: 'regcred', readOnly: false)]) {
             node(POD_LABEL) {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     stage('Creating image ' + name) {
