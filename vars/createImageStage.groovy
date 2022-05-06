@@ -13,7 +13,7 @@ def call(PipelineManager pipelineManager) {
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
-        podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:latest', command: '/busybox/cat', ttyEnabled: true)],
+        podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)],
                     volumes: [secretVolume(mountPath: '/root/.docker/', secretName: 'regcred')]) {
             node(POD_LABEL) {
                 container('kaniko') {
@@ -22,7 +22,7 @@ def call(PipelineManager pipelineManager) {
                     // dir ("${projectPath}${imageName}") {
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
-                        sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
+                        sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space"'
 
                         // getConfigurationFiles(name, projectPath, image, configurationsToKeep)
                         // sh "ls -la"
