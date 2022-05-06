@@ -26,7 +26,8 @@ def call(PipelineManager pipelineManager) {
                         sh '''#!/busybox/sh
                         echo "inside this b."
                         ls -la /kaniko/.docker
-                        cat /kaniko/.docker/.dockerconfigjson
+                        mv /kaniko/.docker/.dockerconfigjson /kaniko/.docker/config.json
+                        ls -la /kaniko/.docker
                         /kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination=ghcr.io/p0dxD/joserod.space
                         '''
                         // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
