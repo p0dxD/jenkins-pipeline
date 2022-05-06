@@ -68,7 +68,7 @@ spec:
             }
         }
     
-    }
+    
     parallel projects
 }
 
