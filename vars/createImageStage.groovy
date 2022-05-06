@@ -24,7 +24,7 @@ def call(PipelineManager pipelineManager) {
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
                         sh '''#!/busybox/sh
-                        /kaniko/executor -f `pwd`/Dockerfile.run -c `pwd` --cache=true --destination=ghcr.io/p0dxD/joserod.space
+                        /kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination=ghcr.io/p0dxD/joserod.space
                         '''
                         // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
 
