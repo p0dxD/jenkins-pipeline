@@ -13,16 +13,20 @@ def call(PipelineManager pipelineManager) {
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
-        podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)],
+        podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug-v0.19.0',imagePullPolicy: 'Always', command: '/busybox/cat', ttyEnabled: true)],
                     volumes: [secretVolume(mountPath: '/root/.docker/', secretName: 'regcred')]) {
             node(POD_LABEL) {
                 container('kaniko') {
                     stage('Creating image ' + name) {
                     cleanWs()
                     // dir ("${projectPath}${imageName}") {
+                        def IMAGE_PUSH_DESTINATION="p0dxD/joserod.space:latest"
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
-                        sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space"'
+                        sh '''#!/busybox/sh
+                        /kaniko/executor --context `pwd` --destination $IMAGE_PUSH_DESTINATION
+                        '''
+                        // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
 
                         // getConfigurationFiles(name, projectPath, image, configurationsToKeep)
                         // sh "ls -la"
