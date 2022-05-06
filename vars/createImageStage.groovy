@@ -14,9 +14,9 @@ def call(PipelineManager pipelineManager) {
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
         podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug-v0.19.0', command: '/busybox/cat', ttyEnabled: true)],
-                    volumes: [secretVolume(mountPath: '/root/.docker/', secretName: 'regcred')]) {
+                    volumes: [secretVolume(mountPath: '/kaniko/.docker', secretName: 'regcred')]) {
             node(POD_LABEL) {
-                container('kaniko') {
+                container(name: 'kaniko', shell: '/busybox/sh') {
                     stage('Creating image ' + name) {
                     cleanWs()
                     // dir ("${projectPath}${imageName}") {
@@ -24,7 +24,7 @@ def call(PipelineManager pipelineManager) {
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
                         sh '''#!/busybox/sh
-                        /kaniko/executor --context `pwd` --destination $IMAGE_PUSH_DESTINATION
+                        /kaniko/executor -f `pwd`/Dockerfile.run -c `pwd` --cache=true --destination=ghcr.io/p0dxD/joserod.space
                         '''
                         // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
 
