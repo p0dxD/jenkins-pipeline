@@ -13,34 +13,8 @@ def call(PipelineManager pipelineManager) {
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
-        kubernetes {
-            label 'kaniko'
-            yaml """
-kind: Pod
-metadata:
-  name: kaniko
-spec:
-  containers:
-  - name: kaniko
-    image: gcr.io/kaniko-project/executor:debug
-    imagePullPolicy: Always
-    command:
-    - /busybox/cat
-    tty: true
-    volumeMounts:
-      - name: jenkins-docker-cfg
-        mountPath: /kaniko/.docker
-  volumes:
-  - name: jenkins-docker-cfg
-    projected:
-      sources:
-      - secret:
-          name: regcred
-          items:
-            - key: .dockerconfigjson
-              path: config.json
-"""
-        }
+        podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)],
+                    volumes: [secretVolume(mountPath: '/kaniko/.docker', secretName: 'regcred')]) {
             node(POD_LABEL) {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     stage('Creating image ' + name) {
@@ -50,6 +24,8 @@ spec:
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
                         sh '''#!/busybox/sh
+                        echo "inside this b."
+                        ls -la /kaniko/.docker
                         /kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination=ghcr.io/p0dxD/joserod.space
                         '''
                         // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
@@ -68,7 +44,7 @@ spec:
             }
         }
     
-    
+    }
     parallel projects
 }
 
