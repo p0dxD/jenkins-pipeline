@@ -46,7 +46,7 @@ podTemplate(yaml: '''
                         def IMAGE_PUSH_DESTINATION="p0dxD/joserod.space:latest"
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
-sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --force --insecure --skip-tls-verify --cache=true --destination=ghcr.io/p0dxD/joserod.space:latest'
+sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --force --insecure --skip-tls-verify --cache=true --destination=ghcr.io/p0dxd/joserod.space:latest'
                         // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
 
                         // getConfigurationFiles(name, projectPath, image, configurationsToKeep)
