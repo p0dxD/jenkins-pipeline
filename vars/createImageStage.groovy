@@ -18,7 +18,7 @@ podTemplate(yaml: '''
               spec:
                 containers:
                 - name: kaniko
-                  image: gcr.io/kaniko-project/executor:v1.8.1
+                  image: gcr.io/kaniko-project/executor:debug
                   imagePullPolicy: Always
                   command:
                   - sleep
