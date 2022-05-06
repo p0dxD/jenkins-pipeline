@@ -13,8 +13,31 @@ def call(PipelineManager pipelineManager) {
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         projects["${projectName}"] = {
-        podTemplate(containers: [containerTemplate(name: 'kaniko', image: 'gcr.io/kaniko-project/executor:debug', command: '/busybox/cat', ttyEnabled: true)],
-                    volumes: [secretVolume(mountPath: '/kaniko/.docker', secretName: 'regcred', readOnly: false)]) {
+podTemplate(yaml: '''
+              kind: Pod
+              spec:
+                containers:
+                - name: kaniko
+                  image: gcr.io/kaniko-project/executor:v1.6.0-debug
+                  imagePullPolicy: Always
+                  command:
+                  - sleep
+                  args:
+                  - 99d
+                  volumeMounts:
+                    - name: jenkins-docker-cfg
+                      mountPath: /kaniko/.docker
+                volumes:
+                - name: jenkins-docker-cfg
+                  projected:
+                    sources:
+                    - secret:
+                        name: regcred
+                        items:
+                          - key: .dockerconfigjson
+                            path: config.json
+'''
+  ) {
             node(POD_LABEL) {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     stage('Creating image ' + name) {
@@ -23,13 +46,7 @@ def call(PipelineManager pipelineManager) {
                         def IMAGE_PUSH_DESTINATION="p0dxD/joserod.space:latest"
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
-                        sh '''#!/busybox/sh
-                        echo "inside this b."
-                        ls -la /kaniko/.docker
-                        cp /kaniko/.docker/.dockerconfigjson /kaniko/.docker/config.json
-                        ls -la /kaniko/.docker
-                        /kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination=ghcr.io/p0dxD/joserod.space
-                        '''
+sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --insecure --skip-tls-verify --cache=true --destination=ghcr.io/p0dxD/joserod.space:latest'
                         // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
 
                         // getConfigurationFiles(name, projectPath, image, configurationsToKeep)
