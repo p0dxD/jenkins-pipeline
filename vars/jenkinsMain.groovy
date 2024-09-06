@@ -4,7 +4,6 @@ def call(){
     pipeline {
         agent none
         options {
-            timestamps()
             skipDefaultCheckout()      // Don't checkout automatically
             disableConcurrentBuilds()
         }        
