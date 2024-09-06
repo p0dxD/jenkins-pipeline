@@ -2,7 +2,7 @@ import space.joserod.pipeline.PipelineManager
 import space.joserod.configs.ProjectConfiguration
 
 def call(PipelineManager pipelineManager){
-    cleanWs()
+    cleanBeforeCheckout()
     unstash "workspace"
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 

@@ -2,7 +2,7 @@ import space.joserod.pipeline.PipelineManager
 import space.joserod.configs.ProjectConfiguration
 
 def call(PipelineManager pipelineManager) {
-    cleanWs()
+    cleanBeforeCheckout()
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         def projectPath = v.path == null ? "" : v.path
@@ -41,7 +41,7 @@ podTemplate(yaml: '''
             node(POD_LABEL) {
                 container(name: 'kaniko', shell: '/busybox/sh') {
                     stage('Creating image ' + name) {
-                    cleanWs()
+                    cleanBeforeCheckout()
                     // dir ("${projectPath}${imageName}") {
                         def IMAGE_PUSH_DESTINATION="p0dxd/joserod.space:latest"
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)

@@ -1,7 +1,7 @@
 import space.joserod.pipeline.PipelineManager
 
 def call(final PipelineManager pipelineManager) {
-    cleanWs()
+    cleanBeforeCheckout()
     checkout scm 
     fillconfiguration(pipelineManager)
     stash "workspace"

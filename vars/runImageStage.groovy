@@ -2,7 +2,7 @@ import space.joserod.pipeline.PipelineManager
 import space.joserod.configs.ProjectConfiguration
 
 def call(PipelineManager pipelineManager) {
-    cleanWs()
+    cleanBeforeCheckout()
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         def projectPath = v.path == null ? "" : v.path
@@ -15,7 +15,7 @@ def call(PipelineManager pipelineManager) {
         projects["${projectName}"] = {
             node("builder.ci.jenkins") {
                 stage("${projectName}") {
-                    cleanWs()
+                    cleanBeforeCheckout()
                     echo "Docker configuration: " + pipelineManager.getProjectConfigurations().getDockerConfigs().get(projectName).values
                     LinkedHashMap dockerConfig = pipelineManager.getProjectConfigurations().getDockerConfigs().get(projectName).values
                     for (Map.Entry<String, ArrayList<String>> entry : dockerConfig.entrySet()) {

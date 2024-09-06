@@ -2,7 +2,7 @@ import space.joserod.pipeline.PipelineManager
 
 
 def call(PipelineManager pipelineManager){
-    cleanWs()
+    cleanBeforeCheckout()
     unstash "workspace"
     def resourceContent = libraryResource("scripts/post-checkout.sh")
     writeFile(file: "post-checkout.sh", text: resourceContent)
