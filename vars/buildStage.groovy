@@ -54,7 +54,7 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
             configureForFrontendFramework(projectPath, stashName, framework)
         } else {
             sh "ls -la"
-            stash name: "${stashName}", includes: 'dist/**/*'
+            stash name: "${stashName}", includes: 'public/**/*'
         }
     } else if (tool.equals("gradle")) {
         stash name: "${stashName}", includes: 'build/**/**'
