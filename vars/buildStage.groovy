@@ -18,7 +18,7 @@ def call(PipelineManager pipelineManager){
         // def stashName = projectConfiguration.values.stashName
         projects["${projectName}"] = {
             podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}")],
-                        volumes: [persistentVolumeClaim(mountPath: '/root/.node/', claimName: 'node', readOnly: false)]) {
+                        volumes: [persistentVolumeClaim(mountPath: "/root/${containerName}", claimName: "${containerName}", readOnly: false)]) {
             node(POD_LABEL) {
                 container(containerName) {
                     stage('Building ' + name + ' project') {
