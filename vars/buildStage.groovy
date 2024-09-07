@@ -15,7 +15,7 @@ def call(PipelineManager pipelineManager){
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         def containerName = projectConfiguration.values.stages.build.tool
         def containerVersion = projectConfiguration.values.stages.build.version
-        def stashName = projectName+env.BRANCH_NAME
+        def stashName = (projectName+env.BRANCH_NAME).replace("/", "_")
         projects["${projectName}"] = {
             podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}")],
                         volumes: [persistentVolumeClaim(mountPath: "/root/${containerName}", claimName: "${containerName}", readOnly: false)]) {
@@ -53,24 +53,24 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
             configureForFrontendFramework(projectPath, stashName, framework)
         } else {
             sh "ls -la"
-            stash name: "${projectPath}${stashName}", includes: 'dist/**/*'
+            stash name: "${stashName}", includes: 'dist/**/*'
         }
     } else if (tool.equals("gradle")) {
-        stash name: "${projectPath}${stashName}", includes: 'build/**/**'
+        stash name: "${stashName}", includes: 'build/**/**'
     }  else if (tool.equals("golang") ) {
-        stash name: "${projectPath}${stashName}", includes: name
+        stash name: "${stashName}", includes: name
     }
-    stash name: "${projectPath}${stashName}docker", includes: 'Dockerfile'
+    stash name: "${stashName}docker", includes: 'Dockerfile'
     if ( configurationsToKeep != null ) {
         int index = 0
         for (String config : configurationsToKeep) {
             echo "Config: " + config
-            stash name: "${projectPath}${stashName}${index}", includes: config
+            stash name: "${stashName}${index}", includes: config
             index = index + 1
         }
     } 
 }
 
 private void configureForFrontendFramework(String projectPath, String stashName, String framework) {
-     stash name: "${projectPath}${stashName}"//, excludes: 'node_modules/**/*'// it'll include all
+     stash name: "${stashName}"//, excludes: 'node_modules/**/*'// it'll include all
 }
