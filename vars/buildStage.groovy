@@ -24,6 +24,8 @@ def call(PipelineManager pipelineManager){
                     stage('Building ' + name + ' project') {
                         unstash "workspace"
                         dir(projectPath) {
+                            echo "In path : ${projectPath}"
+                            sh "ls -la"
                             echo "Doing ${containerName} build."
                             def resourceContent = libraryResource("scripts/${containerName}.sh")
                             writeFile(file: "${containerName}.sh", text: resourceContent)
