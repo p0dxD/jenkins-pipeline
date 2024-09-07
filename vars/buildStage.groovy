@@ -17,7 +17,7 @@ def call(PipelineManager pipelineManager){
         def containerVersion = projectConfiguration.values.stages.build.version
         def stashName = (projectName+env.BRANCH_NAME).replace("/", "_")
         projects["${projectName}"] = {
-            podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}", ttyEnabled: true)],
+            podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}", ttyEnabled: true, command: 'sleep', args: '99d')],
                         volumes: [persistentVolumeClaim(mountPath: "/root/${containerName}", claimName: "${containerName}", readOnly: false)],
                         podRetention: always()) {
             node(POD_LABEL) {
