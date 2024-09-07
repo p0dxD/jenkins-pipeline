@@ -16,8 +16,7 @@ def call(PipelineManager pipelineManager){
         def containerName = projectConfiguration.values.stages.build.tool
         def containerVersion = projectConfiguration.values.stages.build.version
         def stashName = (projectName+env.BRANCH_NAME).replace("/", "_")
-
-        echo "The framework we have is ${framework}"
+        
         projects["${projectName}"] = {
             podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}", ttyEnabled: true, command: 'sleep', args: '99d')],
                         volumes: [persistentVolumeClaim(mountPath: "/root/${containerName}", claimName: "${containerName}", readOnly: false)]) {
@@ -34,7 +33,7 @@ def call(PipelineManager pipelineManager){
                             // sh 'gradle clean build'
                             sh "chmod +x ${containerName}.sh && ./${containerName}.sh"
                             // Stash configuration, and needed files
-                            saveConfigurationFiles(projectName, projectPath, containerName, stashName, framework)
+                            saveConfigurationFiles(projectName, projectPath, containerName, stashName, configurationsToKeep, framework)
                         }
                     }
                 }
