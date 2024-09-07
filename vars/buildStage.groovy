@@ -32,7 +32,7 @@ def call(PipelineManager pipelineManager){
                             // sh 'gradle clean build'
                             sh "chmod +x ${containerName}.sh && ./${containerName}.sh"
                             // Stash configuration, and needed files
-                            saveConfigurationFiles(projectName, projectPath, containerName, stashName)
+                            saveConfigurationFiles(projectName, projectPath, containerName, stashName, framework)
                         }
                     }
                 }
@@ -53,8 +53,7 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
         if (framework != null) {
             configureForFrontendFramework(projectPath, stashName, framework)
         } else {
-            sh "ls -la"
-            stash name: "${stashName}", includes: 'public/**/*'
+            stash name: "${stashName}"
         }
     } else if (tool.equals("gradle")) {
         stash name: "${stashName}", includes: 'build/**/**'
@@ -73,5 +72,15 @@ private void saveConfigurationFiles(String projectName, String projectPath, Stri
 }
 
 private void configureForFrontendFramework(String projectPath, String stashName, String framework) {
-     stash name: "${stashName}"//, excludes: 'node_modules/**/*'// it'll include all
+    echo "Stashing for framework ${framework}"
+    if (framework.equals("next")) {
+        stash name: "${stashName}package.json", includes: "package.json"
+        stash name: "${stashName}package_lock.json", includes: "package-lock.json"
+        stash name: "${stashName}next_config", includes: "next.config.js"
+        stash name: "${stashName}public", includes: "public/**/*"
+        stash name: "${stashName}standalone", includes: ".next/standalone/**/*"
+        stash name: "${stashName}static", includes: ".next/static/**/*"
+    } else {
+        stash name: "${stashName}"//, excludes: 'node_modules/**/*'// it'll include all
+    }
 }

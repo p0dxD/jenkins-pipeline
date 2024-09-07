@@ -8,6 +8,8 @@ def call(PipelineManager pipelineManager) {
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
+
+        def framework = projectConfiguration.values.stages.build?.framework
         def stashName = (projectName+env.BRANCH_NAME).replace("/", "_")
         def version = projectConfiguration.values.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
@@ -44,7 +46,7 @@ podTemplate(yaml: '''
                     cleanBeforeCheckout()
                     // dir ("${projectPath}${imageName}") {
                         def IMAGE_PUSH_DESTINATION="${projectName}:${version}"
-                        getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
+                        getConfigurationFiles(name, projectPath, stashName, configurationsToKeep, framework)
                         sh 'ls -la'
 sh "/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --force --insecure --skip-tls-verify --cache=true --destination=ghcr.io/${projectName}:${version}"
                         // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
@@ -67,9 +69,20 @@ sh "/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --force --insecure --skip-tls-
     parallel projects
 }
 
-private void getConfigurationFiles(String name, String projectPath, String stashName, def configurationsToKeep = null) {
+private void getConfigurationFiles(String name, String projectPath, String stashName, def configurationsToKeep = null, String framework = null) {
     if ( projectPath.equals("") ) projectPath = "project"
-    unstash "${stashName}"
+
+    if (framework.equals("next")) {
+        unstash name: "${stashName}package.json"
+        unstash name: "${stashName}package_lock.json"
+        unstash name: "${stashName}next_config"
+        unstash name: "${stashName}public"
+        unstash name: "${stashName}standalone"
+        unstash name: "${stashName}static"
+    } else {
+      unstash "${stashName}"
+    }
+
     unstash "${stashName}docker"
     if ( configurationsToKeep != null ) {
         int index = 0
