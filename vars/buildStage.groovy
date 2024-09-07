@@ -11,7 +11,7 @@ def call(PipelineManager pipelineManager){
         ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
         // def image = projectConfiguration.values.stages.build.container.name
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
-        def framework = projectConfiguration.values.stages.build?.framework
+        def framework = projectConfiguration.values.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         def containerName = projectConfiguration.values.stages.build.tool
         def containerVersion = projectConfiguration.values.stages.build.version
