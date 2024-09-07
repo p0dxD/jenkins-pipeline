@@ -8,7 +8,7 @@ def call(PipelineManager pipelineManager) {
         def projectPath = v.path == null ? "" : v.path
         def projectName = v.name
          ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-        def stashName = projectConfiguration.values.stashName
+        def stashName = (projectName+env.BRANCH_NAME).replace("/", "_")
         def version = projectConfiguration.values.version
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
@@ -43,10 +43,10 @@ podTemplate(yaml: '''
                     stage('Creating image ' + name) {
                     cleanBeforeCheckout()
                     // dir ("${projectPath}${imageName}") {
-                        def IMAGE_PUSH_DESTINATION="p0dxd/joserod.space:latest"
+                        def IMAGE_PUSH_DESTINATION="${projectName}:${version}"
                         getConfigurationFiles(name, projectPath, stashName, configurationsToKeep)
                         sh 'ls -la'
-sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --force --insecure --skip-tls-verify --cache=true --destination=ghcr.io/p0dxd/joserod.space:latest'
+sh "/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --force --insecure --skip-tls-verify --cache=true --destination=ghcr.io/${projectName}:${version}"
                         // sh '/kaniko/executor --dockerfile=Dockerfile --verbosity=debug --destination="ghcr.io/p0dxD/joserod.space:latest"'
 
                         // getConfigurationFiles(name, projectPath, image, configurationsToKeep)
@@ -67,15 +67,15 @@ sh '/kaniko/executor -f `pwd`/Dockerfile -c `pwd` --force --insecure --skip-tls-
     parallel projects
 }
 
-private void getConfigurationFiles(String name, String projectPath, String tool, def configurationsToKeep = null) {
+private void getConfigurationFiles(String name, String projectPath, String stashName, def configurationsToKeep = null) {
     if ( projectPath.equals("") ) projectPath = "project"
-    unstash "${projectPath}${tool}"
-    unstash "${projectPath}${tool}docker"
+    unstash "${stashName}"
+    unstash "${stashName}docker"
     if ( configurationsToKeep != null ) {
         int index = 0
         for (String config : configurationsToKeep) {
             echo "Config: " + config
-            unstash "${projectPath}${tool}${index}"
+            unstash "${stashName}${index}"
             index = index + 1
         }
     } 
