@@ -1,1 +1,1 @@
-gradle clean
+gradle clean build
