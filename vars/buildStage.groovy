@@ -29,6 +29,7 @@ def call(PipelineManager pipelineManager){
                             echo "Doing ${containerName} build."
                             def resourceContent = libraryResource("scripts/${containerName}.sh")
                             writeFile(file: "${containerName}.sh", text: resourceContent)
+                            sh 'gradle clean build'
                             // sh "chmod +x ${containerName}.sh && ./${containerName}.sh || true"
                             // Stash configuration, and needed files
                             saveConfigurationFiles(projectName, projectPath, containerName, stashName)
