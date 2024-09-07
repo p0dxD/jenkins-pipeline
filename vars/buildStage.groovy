@@ -13,11 +13,12 @@ def call(PipelineManager pipelineManager){
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
         def framework = projectConfiguration.values.stages.build?.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
-        def containerName = projectConfiguration.values.stages.build.container.name
-        def stashName = projectConfiguration.values.stashName
+        def containerName = projectConfiguration.values.stages.build.tool
+        def containerVersion = projectConfiguration.values.stages.build.version
+        // def stashName = projectConfiguration.values.stashName
         projects["${projectName}"] = {
-            podTemplate(containers: [containerTemplate(projectConfiguration.values.stages.build.container)],
-                        volumes: [persistentVolumeClaim(projectConfiguration.values.stages.build.volume)]) {
+            podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}")],
+                        volumes: [persistentVolumeClaim(mountPath: '/root/.node/', claimName: 'node', readOnly: false)]) {
             node(POD_LABEL) {
                 container(containerName) {
                     stage('Building ' + name + ' project') {
