@@ -15,7 +15,7 @@ def call(PipelineManager pipelineManager){
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         def containerName = projectConfiguration.values.stages.build.tool
         def containerVersion = projectConfiguration.values.stages.build.version
-        // def stashName = projectConfiguration.values.stashName
+        def stashName = projectName+env.BRANCH_NAME
         projects["${projectName}"] = {
             podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}")],
                         volumes: [persistentVolumeClaim(mountPath: "/root/${containerName}", claimName: "${containerName}", readOnly: false)]) {
