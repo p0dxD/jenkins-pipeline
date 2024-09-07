@@ -3,7 +3,7 @@ import space.joserod.configs.ProjectConfiguration
 
 def call(PipelineManager pipelineManager){
     cleanBeforeCheckout()
-    unstash "workspace"
+    unstash 'workspace'
     def projects = [:]
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
         def projectPath = v.path == null ? "" : v.path
@@ -11,11 +11,13 @@ def call(PipelineManager pipelineManager){
         ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
         // def image = projectConfiguration.values.stages.build.container.name
         def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
-        def framework = projectConfiguration.values.framework
+        String framework = projectConfiguration.values.framework
         String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
         def containerName = projectConfiguration.values.stages.build.tool
         def containerVersion = projectConfiguration.values.stages.build.version
         def stashName = (projectName+env.BRANCH_NAME).replace("/", "_")
+
+        echo "The framework we have is ${framework}"
         projects["${projectName}"] = {
             podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}", ttyEnabled: true, command: 'sleep', args: '99d')],
                         volumes: [persistentVolumeClaim(mountPath: "/root/${containerName}", claimName: "${containerName}", readOnly: false)]) {
