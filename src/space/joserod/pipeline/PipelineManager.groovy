@@ -4,11 +4,11 @@ import space.joserod.configs.Config
 
 @Singleton
 class PipelineManager {
-    Config projectConfigurations = Config.instance
+    Config projectConfigurations
     boolean exitEarly
 
-    // void init() {
-    //     projectConfigurations = Config.instance
-    // }
+    void init() {
+        projectConfigurations = Config.instance
+    }
 
 }
