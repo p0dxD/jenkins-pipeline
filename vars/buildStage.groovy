@@ -79,8 +79,8 @@ private void configureForFrontendFramework(String projectPath, String stashName,
         stash name: "${stashName}package_lock.json", includes: "package-lock.json"
         stash name: "${stashName}next_config", includes: "next.config.js"
         stash name: "${stashName}public", includes: "public/**/*"
-        stash name: "${stashName}standalone", includes: ".next/standalone/**/*"
-        stash name: "${stashName}static", includes: ".next/static/**/*"
+        stash name: "${stashName}next", includes: ".next/**/*"
+        // stash name: "${stashName}static", includes: ".next/static/**/*"
     } else {
         stash name: "${stashName}"//, excludes: 'node_modules/**/*'// it'll include all
     }

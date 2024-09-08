@@ -75,8 +75,8 @@ private void getConfigurationFiles(String name, String projectPath, String stash
     unstash name: "${stashName}package_lock.json"
     unstash name: "${stashName}next_config"
     unstash name: "${stashName}public"
-    unstash name: "${stashName}standalone"
-    unstash name: "${stashName}static"
+    unstash name: "${stashName}next"
+    // unstash name: "${stashName}static"
     } else {
     unstash "${stashName}"
   }
