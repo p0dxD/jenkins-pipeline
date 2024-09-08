@@ -4,7 +4,6 @@ def call() {
     /** The main configuration object. */
     PipelineManager pipelineManager = PipelineManager.instance
 
-hudson.remoting.ProxyException: org.codehaus.groovy.runtime.typehandling.GroovyCastException: Cannot cast object 'space.joserod.configs.Config@32e4622a' with class 'space.joserod.configs.Config' to class 'space.joserod.pipeline.PipelineManager'
     pipeline {
         agent none
         options {
