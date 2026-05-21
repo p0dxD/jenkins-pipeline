@@ -35,10 +35,11 @@ def call(PipelineManager pipelineManager) {
         writeYaml file: path, data: yaml, overwrite: true
     }
 
-    sshagent(credentials: ['jenkins-ci-ssh']) {
+    withCredentials([usernamePassword(credentialsId: 'github-pat', usernameVariable: 'GH_USER', passwordVariable: 'GH_TOKEN')]) {
         sh """
             git config user.email "jenkins-ci@cube.local"
             git config user.name "Jenkins CI"
+            git remote set-url origin https://\${GH_USER}:\${GH_TOKEN}@github.com/p0dxD/main_configs.git
             git add -A
             if ! git diff --staged --quiet; then
                 git commit -m "ci: bump image tags to ${buildTag} [skip ci]"
