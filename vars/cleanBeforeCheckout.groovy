@@ -1,3 +1,3 @@
 def call() {
-    cleanWs()
+    deleteDir()
 }
