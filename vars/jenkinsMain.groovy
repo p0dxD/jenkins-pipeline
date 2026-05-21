@@ -1,87 +1,92 @@
 import space.joserod.pipeline.PipelineManager
-def call(){
-    PipelineManager pipelineManager = PipelineManager.getInstance();
+
+// configPath: path to jenkinsconfig.yaml relative to repo root (default: 'jenkinsconfig.yaml')
+def call(String configPath = 'jenkinsconfig.yaml') {
+    PipelineManager pipelineManager = PipelineManager.getInstance()
     pipeline {
         agent none
         options {
-            skipDefaultCheckout()      // Don't checkout automatically
+            skipDefaultCheckout()
             disableConcurrentBuilds()
-        }        
+        }
         stages {
-            stage('Checkout') {          
+            stage('Checkout') {
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
                         inheritFrom 'kube-agent'
                         slaveConnectTimeout 300
                         idleMinutes 5
-                    }    
+                    }
                 }
                 steps {
                     script {
-                        pipelineManager.init()// init pipeline configuration and manager
-                        checkoutStage(pipelineManager)// initialize config, checkout code
+                        pipelineManager.init()
+                        checkoutStage(pipelineManager, configPath)
                     }
                 }
             }
-            // stage('Post Chechout') {
-            //     when {
-            //         expression { !pipelineManager.exitEarly() }
-            //     }  
-            //     agent { label "builder.ci.jenkins"}
-            //     steps {
-            //         script {
-            //             postCheckoutStage(pipelineManager)
-            //         }
-            //     }
-            // }
-            stage('build') {
-                when {
-                    expression { !pipelineManager.exitEarly() }
-                }  
+            stage('Build') {
+                when { expression { !pipelineManager.exitEarly() } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
                         inheritFrom 'kube-agent'
                         slaveConnectTimeout 300
                         idleMinutes 5
-                    }    
-                }
-                steps {
-                    script {
-                        buildStage(pipelineManager)
                     }
                 }
+                steps {
+                    script { buildStage(pipelineManager) }
+                }
             }
-            stage('Create and push image') {
-                when {
-                    expression { !pipelineManager.exitEarly() }
-                }  
+            stage('Build and Push Images') {
+                when { expression { !pipelineManager.exitEarly() } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
                         inheritFrom 'kube-agent'
                         slaveConnectTimeout 300
                         idleMinutes 5
-                    }    
-                }
-                steps {
-                    script {
-                        createImageStage(pipelineManager)
                     }
                 }
+                steps {
+                    script { createImageStage(pipelineManager) }
+                }
             }
-            // stage('Run image') {
-            //     when {
-            //         expression { !pipelineManager.exitEarly() && pipelineManager.getProjectConfigurations().getDockerConfigs().size() != 0 }
-            //     }  
-            //     agent { label "builder.ci.jenkins"}
-            //     steps {
-            //         script {
-            //             runImageStage(pipelineManager)
-            //         }
-            //     }
-            // }
+            stage('Bump Tags') {
+                when { expression { !pipelineManager.exitEarly() } }
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }
+                }
+                steps {
+                    script { bumpTagsStage(pipelineManager) }
+                }
+            }
+            stage('Deploy Fission') {
+                when { expression { !pipelineManager.exitEarly() && pipelineManager.hasFissionProjects() } }
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }
+                }
+                steps {
+                    script { deployFissionStage(pipelineManager) }
+                }
+            }
+        }
+        post {
+            success {
+                echo "Pipeline completed. Build tag: ${pipelineManager.getBuildTag() ?: 'n/a'}"
+            }
         }
     }
 }

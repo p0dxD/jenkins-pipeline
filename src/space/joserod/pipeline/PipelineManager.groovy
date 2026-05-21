@@ -1,42 +1,51 @@
 package space.joserod.pipeline
 
 import space.joserod.configs.Config
+import space.joserod.configs.ProjectConfiguration
 
 public class PipelineManager {
     private Config configs
     private boolean exitEarly
-    // private final String dockerImageName
-    private static PipelineManager pipelineManager = new PipelineManager();
+    private String buildTag
+    private static PipelineManager pipelineManager = new PipelineManager()
 
-    private PipelineManager() {
+    private PipelineManager() {}
+
+    public static PipelineManager getInstance() {
+        return pipelineManager
     }
-
-   //Get the only object available
-   public static PipelineManager getInstance(){
-      return pipelineManager;
-   }
 
     public void init() {
         configs = Config.getInstance()
+        exitEarly = false
+        buildTag = null
     }
 
-   public Config getProjectConfigurations() {
-       return this.configs
-   }
+    public Config getProjectConfigurations() {
+        return this.configs
+    }
 
-   public void setExitEarly(boolean exitEarly) {
-       this.exitEarly = exitEarly
-   }
+    public void setExitEarly(boolean exitEarly) {
+        this.exitEarly = exitEarly
+    }
 
-   public boolean exitEarly() {
-       return this.exitEarly
-   }
+    public boolean exitEarly() {
+        return this.exitEarly
+    }
 
-//    public void setDockerImageName(String dockerImageName) {
-//        this.dockerImageName = dockerImageName
-//    }
+    public void setBuildTag(String tag) {
+        this.buildTag = tag
+    }
 
-//    public String getDockerImageName() {
-//        return this.dockerImageName
-//    }
+    public String getBuildTag() {
+        return this.buildTag
+    }
+
+    public boolean hasFissionProjects() {
+        return configs.getFissionProjects().size() > 0
+    }
+
+    public List<ProjectConfiguration> getFissionProjects() {
+        return configs.getFissionProjects()
+    }
 }

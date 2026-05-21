@@ -1,87 +1,18 @@
 import space.joserod.pipeline.PipelineManager
-import space.joserod.configs.ProjectConfiguration
 
-def call(PipelineManager pipelineManager){
+def call(PipelineManager pipelineManager) {
     cleanBeforeCheckout()
     unstash 'workspace'
-    def projects = [:]
-    pipelineManager.getProjectConfigurations().getProjectsConfigs().each{ k, v -> 
-        def projectPath = v.path == null ? "" : v.path
-        def projectName = v.name
-        ProjectConfiguration projectConfiguration = pipelineManager.getProjectConfigurations().getProjectsConfigs().get(projectName)
-        // def image = projectConfiguration.values.stages.build.container.name
-        def configurationsToKeep = projectConfiguration.values.stages.build?.configuration
-        String framework = projectConfiguration.values.framework
-        String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
-        def containerName = projectConfiguration.values.stages.build.tool
-        def containerVersion = projectConfiguration.values.stages.build.version
-        def stashName = (projectName+env.BRANCH_NAME).replace("/", "_")
-        
-        projects["${projectName}"] = {
-            podTemplate(containers: [containerTemplate(name: containerName, image: "${containerName}:${containerVersion}", ttyEnabled: true, command: 'sleep', args: '99d')],
-                        volumes: [persistentVolumeClaim(mountPath: "/root/${containerName}", claimName: "${containerName}", readOnly: false)]) {
-            node(POD_LABEL) {
-                container(containerName) {
-                    stage('Building ' + name + ' project') {
-                        unstash "workspace"
-                        dir(projectPath) {
-                            echo "In path : ${projectPath}"
-                            sh "ls -la"
-                            echo "Doing ${containerName} build."
-                            def resourceContent = libraryResource("scripts/${containerName}.sh")
-                            writeFile(file: "${containerName}.sh", text: resourceContent)
-                            // sh 'gradle clean build'
-                            sh "chmod +x ${containerName}.sh && ./${containerName}.sh"
-                            // Stash configuration, and needed files
-                            saveConfigurationFiles(projectName, projectPath, containerName, stashName, configurationsToKeep, framework)
-                        }
-                    }
-                }
-            }
-            }
-        }
-    
-    }
-    parallel projects
-}
 
+    pipelineManager.getProjectConfigurations().getProjectsConfigs().each { k, v ->
+        if (v.values.type == 'fission') return
 
-private void saveConfigurationFiles(String projectName, String projectPath, String tool, String stashName, def configurationsToKeep = null, String framework = null) {
-    echo "Will stash on: ${projectPath}${tool}"
-    if ( projectPath.equals("") ) projectPath = "project"
-    String name = projectName.split("/").length > 1 ? projectName.split("/")[1] : projectName.split("/")[0]
-    if(tool.equals("node")) {
-        if (framework != null) {
-            configureForFrontendFramework(projectPath, stashName, framework)
-        } else {
-            stash name: "${stashName}"
-        }
-    } else if (tool.equals("gradle")) {
-        stash name: "${stashName}", includes: 'build/**/**'
-    }  else if (tool.equals("golang") ) {
-        stash name: "${stashName}", includes: name
-    }
-    stash name: "${stashName}docker", includes: 'Dockerfile'
-    if ( configurationsToKeep != null ) {
-        int index = 0
-        for (String config : configurationsToKeep) {
-            echo "Config: " + config
-            stash name: "${stashName}${index}", includes: config
-            index = index + 1
-        }
-    } 
-}
+        def projectPath = v.values.path ?: '.'
+        def stashName = v.values.name.replace('/', '_')
 
-private void configureForFrontendFramework(String projectPath, String stashName, String framework) {
-    echo "Stashing for framework ${framework}"
-    if (framework.equals("next")) {
-        stash name: "${stashName}package.json", includes: "package.json"
-        stash name: "${stashName}package_lock.json", includes: "package-lock.json"
-        stash name: "${stashName}next_config", includes: "next.config.js"
-        stash name: "${stashName}public", includes: "public/**/*"
-        stash name: "${stashName}next", includes: ".next/**/*"
-        // stash name: "${stashName}static", includes: ".next/static/**/*"
-    } else {
-        stash name: "${stashName}"//, excludes: 'node_modules/**/*'// it'll include all
+        dir(projectPath) {
+            echo "Stashing ${v.values.name} from ${projectPath}"
+            stash name: stashName, includes: '**/*', excludes: 'node_modules/**/*,.git/**'
+        }
     }
 }
