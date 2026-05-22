@@ -2,8 +2,9 @@ import space.joserod.pipeline.PipelineManager
 
 def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconfig.yaml') {
     cleanBeforeCheckout()
-    checkout scm
-    pipelineManager.setGitCommit(env.GIT_COMMIT)
+    def scmVars = checkout scm
+    def gitSha = scmVars.GIT_COMMIT ?: sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
+    pipelineManager.setGitCommit(gitSha)
 
     def remoteUrl = sh(script: 'git remote get-url origin', returnStdout: true).trim()
     def repoPath = remoteUrl.replaceAll(/.*github\.com[:\/]/, '').replaceAll(/\.git$/, '')
@@ -12,7 +13,7 @@ def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconf
     pipelineManager.setGitRepo(parts[1])
 
     githubNotify credentialsId: 'github-pat',
-                 sha: env.GIT_COMMIT,
+                 sha: gitSha,
                  account: parts[0],
                  repo: parts[1],
                  status: 'PENDING',

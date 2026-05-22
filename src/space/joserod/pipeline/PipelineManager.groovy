@@ -3,7 +3,8 @@ package space.joserod.pipeline
 import space.joserod.configs.Config
 import space.joserod.configs.ProjectConfiguration
 
-public class PipelineManager {
+public class PipelineManager implements Serializable {
+    private static final long serialVersionUID = 1L
     private Config configs
     private boolean exitEarly
     private String buildTag
