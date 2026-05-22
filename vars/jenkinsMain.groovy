@@ -26,6 +26,48 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                     }
                 }
             }
+            stage('Unit Tests') {
+                when { expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('unit') } }
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }
+                }
+                steps {
+                    script { unitTestStage(pipelineManager) }
+                }
+            }
+            stage('Functional Tests') {
+                when { expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('functional') } }
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }
+                }
+                steps {
+                    script { functionalTestStage(pipelineManager) }
+                }
+            }
+            stage('Integration Tests') {
+                when { expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('integration') } }
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }
+                }
+                steps {
+                    script { integrationTestStage(pipelineManager) }
+                }
+            }
             stage('Build') {
                 when { expression { !pipelineManager.exitEarly() } }
                 agent {

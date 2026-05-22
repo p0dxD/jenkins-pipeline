@@ -54,6 +54,10 @@ public class PipelineManager implements Serializable {
     public void setGitRepo(String repo) { this.gitRepo = repo }
     public String getGitRepo() { return this.gitRepo }
 
+    public boolean hasTestType(String type) {
+        return configs.getProjectsConfigs().values().any { it.values?.stages?.test?."${type}" != null }
+    }
+
     public boolean hasFissionProjects() {
         return configs.getFissionProjects().size() > 0
     }
