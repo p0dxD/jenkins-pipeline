@@ -39,7 +39,9 @@ def call(PipelineManager pipelineManager) {
         sh """
             git config user.email "jenkins-ci@cube.local"
             git config user.name "Jenkins CI"
-            git remote set-url origin https://\${GH_USER}:\${GH_TOKEN}@github.com/p0dxD/main_configs.git
+            ORIGIN=\$(git remote get-url origin)
+            AUTHED=\$(echo "\$ORIGIN" | sed 's|https://|https://'\${GH_USER}':'\${GH_TOKEN}'@|')
+            git remote set-url origin "\$AUTHED"
             git add -A
             if ! git diff --staged --quiet; then
                 git commit -m "ci: bump image tags to ${buildTag} [skip ci]"
