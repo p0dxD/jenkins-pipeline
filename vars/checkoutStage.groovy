@@ -30,11 +30,46 @@ def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconf
         return
     }
 
-    pipelineManager.setBuildTag("1.0.${env.BUILD_NUMBER}")
-    echo "Build tag: ${pipelineManager.getBuildTag()}"
-
+    // Populate projectsConfigs before computing the tag so we can read kustomization files
     fillConfiguration(pipelineManager, configPath)
-    stash name: 'workspace', includes: '**/*', excludes: '.git/**'
+
+    if (!pipelineManager.exitEarly()) {
+        def nextTag = computeNextTag(pipelineManager)
+        pipelineManager.setBuildTag(nextTag)
+        echo "Build tag: ${pipelineManager.getBuildTag()}"
+        stash name: 'workspace', includes: '**/*', excludes: '.git/**'
+    }
+}
+
+// Find the highest semver tag across all kustomization images, then return major.minor.(patch+1)
+private String computeNextTag(PipelineManager pipelineManager) {
+    def maxMajor = 1; def maxMinor = 0; def maxPatch = 0
+    def seen = new HashSet()
+
+    pipelineManager.getProjectConfigurations().getProjectsConfigs().each { k, v ->
+        def kPath = v.values?.kustomization
+        if (!kPath || seen.contains(kPath)) return
+        seen.add(kPath)
+        try {
+            def yaml = readYaml(file: kPath)
+            yaml.images?.each { img ->
+                if (img.newTag) {
+                    def p = img.newTag.toString().tokenize('.')
+                    if (p.size() == 3) {
+                        int maj = p[0] as int, min = p[1] as int, pat = p[2] as int
+                        if (maj > maxMajor || (maj == maxMajor && min > maxMinor) ||
+                            (maj == maxMajor && min == maxMinor && pat > maxPatch)) {
+                            maxMajor = maj; maxMinor = min; maxPatch = pat
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            echo "Warning: could not read ${kPath} for tag derivation: ${e.message}"
+        }
+    }
+
+    return "${maxMajor}.${maxMinor}.${maxPatch + 1}"
 }
 
 private void fillConfiguration(final PipelineManager pipelineManager, String configPath) {
