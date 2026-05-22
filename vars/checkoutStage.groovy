@@ -3,6 +3,12 @@ import space.joserod.pipeline.PipelineManager
 def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconfig.yaml') {
     cleanBeforeCheckout()
     checkout scm
+    pipelineManager.setGitCommit(env.GIT_COMMIT)
+
+    githubNotify credentialsId: 'github-pat',
+                 status: 'PENDING',
+                 context: 'Jenkins CI',
+                 description: 'Build in progress'
 
     // Skip pipeline for commits made by the pipeline itself
     def commitMsg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()

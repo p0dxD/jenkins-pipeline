@@ -7,6 +7,7 @@ public class PipelineManager {
     private Config configs
     private boolean exitEarly
     private String buildTag
+    private String gitCommit
     private static PipelineManager pipelineManager = new PipelineManager()
 
     private PipelineManager() {}
@@ -40,6 +41,9 @@ public class PipelineManager {
     public String getBuildTag() {
         return this.buildTag
     }
+
+    public void setGitCommit(String sha) { this.gitCommit = sha }
+    public String getGitCommit() { return this.gitCommit }
 
     public boolean hasFissionProjects() {
         return configs.getFissionProjects().size() > 0

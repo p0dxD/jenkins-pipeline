@@ -85,7 +85,27 @@ def call(String configPath = 'jenkinsconfig.yaml') {
         }
         post {
             success {
+                script {
+                    if (pipelineManager.getGitCommit()) {
+                        githubNotify credentialsId: 'github-pat',
+                                     sha: pipelineManager.getGitCommit(),
+                                     status: 'SUCCESS',
+                                     context: 'Jenkins CI',
+                                     description: "Build #${env.BUILD_NUMBER} passed"
+                    }
+                }
                 echo "Pipeline completed. Build tag: ${pipelineManager.getBuildTag() ?: 'n/a'}"
+            }
+            failure {
+                script {
+                    if (pipelineManager.getGitCommit()) {
+                        githubNotify credentialsId: 'github-pat',
+                                     sha: pipelineManager.getGitCommit(),
+                                     status: 'FAILURE',
+                                     context: 'Jenkins CI',
+                                     description: "Build #${env.BUILD_NUMBER} failed"
+                    }
+                }
             }
         }
     }
