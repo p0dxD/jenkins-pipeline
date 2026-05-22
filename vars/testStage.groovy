@@ -9,34 +9,42 @@ def call(PipelineManager pipelineManager, String testType) {
         return
     }
 
-    podTemplate(yaml: """
+    def branches = [:]
+
+    projects.each { proj ->
+        def projName    = proj.values.name
+        def projPath    = proj.values.path ?: '.'
+        def testConfig  = proj.values.stages.test."${testType}"
+        def tool        = testConfig.tool ?: 'python'
+        def testCommand = testConfig.command
+        def image       = tool == 'node' ? 'node:20-alpine' : 'python:3.11-slim'
+
+        branches["${projName}"] = {
+            podTemplate(yaml: """
 apiVersion: v1
 kind: Pod
 spec:
   serviceAccountName: jenkins-admin
   containers:
-  - name: python
-    image: python:3.11-slim
-    command: ["sleep"]
-    args: ["99d"]
-  - name: node
-    image: node:20-alpine
+  - name: ${tool}
+    image: ${image}
     command: ["sleep"]
     args: ["99d"]
 """) {
-        node(POD_LABEL) {
-            cleanBeforeCheckout()
-            unstash 'workspace'
-            projects.each { proj ->
-                def testConfig = proj.values.stages.test."${testType}"
-                def tool = testConfig.tool ?: 'python'
-                echo "▶ ${testType} tests: ${proj.values.name}"
-                container(tool) {
-                    dir(proj.values.path) {
-                        sh testConfig.command
+                node(POD_LABEL) {
+                    container(tool) {
+                        stage("${testType}: ${projName}") {
+                            cleanBeforeCheckout()
+                            unstash 'workspace'
+                            dir(projPath) {
+                                sh testCommand
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
+    parallel branches
 }
