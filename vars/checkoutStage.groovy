@@ -5,7 +5,16 @@ def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconf
     checkout scm
     pipelineManager.setGitCommit(env.GIT_COMMIT)
 
+    def remoteUrl = sh(script: 'git remote get-url origin', returnStdout: true).trim()
+    def repoPath = remoteUrl.replaceAll(/.*github\.com[:\/]/, '').replaceAll(/\.git$/, '')
+    def parts = repoPath.split('/')
+    pipelineManager.setGitAccount(parts[0])
+    pipelineManager.setGitRepo(parts[1])
+
     githubNotify credentialsId: 'github-pat',
+                 sha: env.GIT_COMMIT,
+                 account: parts[0],
+                 repo: parts[1],
                  status: 'PENDING',
                  context: 'Jenkins CI',
                  description: 'Build in progress'

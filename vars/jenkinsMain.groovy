@@ -89,6 +89,8 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                     if (pipelineManager.getGitCommit()) {
                         githubNotify credentialsId: 'github-pat',
                                      sha: pipelineManager.getGitCommit(),
+                                     account: pipelineManager.getGitAccount(),
+                                     repo: pipelineManager.getGitRepo(),
                                      status: 'SUCCESS',
                                      context: 'Jenkins CI',
                                      description: "Build #${env.BUILD_NUMBER} passed"
@@ -101,6 +103,8 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                     if (pipelineManager.getGitCommit()) {
                         githubNotify credentialsId: 'github-pat',
                                      sha: pipelineManager.getGitCommit(),
+                                     account: pipelineManager.getGitAccount(),
+                                     repo: pipelineManager.getGitRepo(),
                                      status: 'FAILURE',
                                      context: 'Jenkins CI',
                                      description: "Build #${env.BUILD_NUMBER} failed"
