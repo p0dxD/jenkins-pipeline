@@ -8,6 +8,7 @@ def call(PipelineManager pipelineManager) {
 apiVersion: v1
 kind: Pod
 spec:
+  serviceAccountName: jenkins-admin
   containers:
   - name: deploy
     image: alpine/k8s:1.30.2
