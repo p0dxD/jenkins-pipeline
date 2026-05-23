@@ -46,7 +46,9 @@ def call(PipelineManager pipelineManager) {
             if ! git diff --staged --quiet; then
                 git commit -m "ci: bump image tags to ${buildTag} [skip ci]"
                 git push origin HEAD:main
-                echo "Tags bumped and pushed."
+                git tag "v${buildTag}"
+                git push origin "v${buildTag}"
+                echo "Tags bumped and pushed. GitHub release tag v${buildTag} created."
             else
                 echo "No tag changes to commit."
             fi
