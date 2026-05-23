@@ -41,7 +41,19 @@ def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconf
     }
 }
 
-// Find the highest semver tag across all kustomization images, then return major.minor.(patch+1)
+// Determine bump type from conventional commit message:
+//   feat! / BREAKING CHANGE → major
+//   feat:                   → minor
+//   anything else           → patch
+private String getBumpType() {
+    def msg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()
+    if (msg.contains('BREAKING CHANGE') || msg =~ /^(\w+)!:/) return 'major'
+    if (msg =~ /^feat(\(.+\))?:/) return 'minor'
+    return 'patch'
+}
+
+// Find the highest semver tag across all kustomization images, then bump
+// according to the conventional commit prefix in the triggering commit.
 private String computeNextTag(PipelineManager pipelineManager) {
     def maxMajor = 1; def maxMinor = 0; def maxPatch = 0
     def seen = new HashSet()
@@ -69,7 +81,13 @@ private String computeNextTag(PipelineManager pipelineManager) {
         }
     }
 
-    return "${maxMajor}.${maxMinor}.${maxPatch + 1}"
+    def bump = getBumpType()
+    echo "Conventional commit bump type: ${bump}"
+    switch (bump) {
+        case 'major': return "${maxMajor + 1}.0.0"
+        case 'minor': return "${maxMajor}.${maxMinor + 1}.0"
+        default:      return "${maxMajor}.${maxMinor}.${maxPatch + 1}"
+    }
 }
 
 private void fillConfiguration(final PipelineManager pipelineManager, String configPath) {
