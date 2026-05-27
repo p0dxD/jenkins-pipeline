@@ -27,7 +27,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Unit Tests') {
-                when { expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('unit') } }
+                when { beforeAgent true; expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('unit') } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
@@ -41,7 +41,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Functional Tests') {
-                when { expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('functional') } }
+                when { beforeAgent true; expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('functional') } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
@@ -55,7 +55,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Integration Tests') {
-                when { expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('integration') } }
+                when { beforeAgent true; expression { !pipelineManager.exitEarly() && pipelineManager.hasTestType('integration') } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
@@ -111,7 +111,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Deploy Fission') {
-                when { expression { !pipelineManager.exitEarly() && pipelineManager.hasFissionProjects() } }
+                when { beforeAgent true; expression { !pipelineManager.exitEarly() && pipelineManager.hasFissionProjects() } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
