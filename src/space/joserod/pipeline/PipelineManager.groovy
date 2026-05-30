@@ -57,12 +57,4 @@ public class PipelineManager implements Serializable {
     public boolean hasTestType(String type) {
         return configs.getProjectsConfigs().values().any { it.values?.stages?.test?."${type}" != null }
     }
-
-    public boolean hasFissionProjects() {
-        return configs.getFissionProjects().size() > 0
-    }
-
-    public List<ProjectConfiguration> getFissionProjects() {
-        return configs.getFissionProjects()
-    }
 }

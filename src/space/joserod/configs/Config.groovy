@@ -25,8 +25,4 @@ public class Config {
     public HashMap<String, ProjectConfiguration> getProjectsConfigs() {
         return this.projects
     }
-
-    public List<ProjectConfiguration> getFissionProjects() {
-        return projects.values().findAll { it.values.type == 'fission' }
-    }
 }

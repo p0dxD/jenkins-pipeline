@@ -110,20 +110,6 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                     script { bumpTagsStage(pipelineManager) }
                 }
             }
-            stage('Deploy Fission') {
-                when { beforeAgent true; expression { !pipelineManager.exitEarly() && pipelineManager.hasFissionProjects() } }
-                agent {
-                    kubernetes {
-                        cloud 'kubernetes'
-                        inheritFrom 'kube-agent'
-                        slaveConnectTimeout 300
-                        idleMinutes 5
-                    }
-                }
-                steps {
-                    script { deployFissionStage(pipelineManager) }
-                }
-            }
         }
         post {
             success {
