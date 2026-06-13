@@ -12,12 +12,18 @@ def call(PipelineManager pipelineManager, String testType) {
     def branches = [:]
 
     projects.each { proj ->
-        def projName    = proj.values.name
-        def projPath    = proj.values.path ?: '.'
-        def testConfig  = proj.values.stages.test."${testType}"
-        def tool        = testConfig.tool ?: 'python'
-        def testCommand = testConfig.command
-        def image       = tool == 'node' ? 'node:20-alpine' : 'python:3.11-slim'
+        def projName     = proj.values.name
+        def projPath     = proj.values.path ?: '.'
+        def testConfig   = proj.values.stages.test."${testType}"
+        def tool         = testConfig.tool ?: 'python'
+        def testCommand  = testConfig.command
+        // Optional explicit image (e.g. a prebuilt test image with deps baked
+        // in), otherwise default by tool.
+        def image        = testConfig.image ?: (tool == 'node' ? 'node:20-alpine' : 'python:3.11-slim')
+        // Optional result publishing + blocking behaviour.
+        def junitPath    = testConfig.junit
+        def coveragePath = testConfig.coverage
+        def blocking     = (testConfig.blocking == null) ? true : testConfig.blocking
 
         branches["${projName}"] = {
             podTemplate(yaml: """
@@ -37,7 +43,33 @@ spec:
                             cleanBeforeCheckout()
                             unstash 'workspace'
                             dir(projPath) {
-                                sh testCommand
+                                // Run the command but don't abort immediately on a
+                                // non-zero exit — we still want to publish results
+                                // so a failing test is visible on the build page.
+                                def status = sh(script: testCommand, returnStatus: true)
+
+                                if (junitPath) {
+                                    junit testResults: junitPath, allowEmptyResults: true
+                                }
+                                if (coveragePath) {
+                                    // Best-effort: recordCoverage needs the Coverage
+                                    // plugin. Until it's installed, archive the report
+                                    // instead of failing the build.
+                                    try {
+                                        recordCoverage(tools: [[parser: 'COBERTURA', pattern: coveragePath]])
+                                    } catch (ignored) {
+                                        echo "Coverage plugin unavailable — archiving ${coveragePath} instead."
+                                        archiveArtifacts artifacts: coveragePath, allowEmptyArchive: true
+                                    }
+                                }
+
+                                if (status != 0) {
+                                    if (blocking) {
+                                        error("${projName} ${testType} failed (exit ${status})")
+                                    } else {
+                                        unstable("${projName} ${testType} reported issues (exit ${status}) — non-blocking")
+                                    }
+                                }
                             }
                         }
                     }
