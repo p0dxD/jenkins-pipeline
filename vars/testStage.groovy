@@ -52,15 +52,14 @@ spec:
                                     junit testResults: junitPath, allowEmptyResults: true
                                 }
                                 if (coveragePath) {
-                                    // Best-effort: recordCoverage needs the Coverage
-                                    // plugin. Until it's installed, archive the report
-                                    // instead of failing the build.
-                                    try {
-                                        recordCoverage(tools: [[parser: 'COBERTURA', pattern: coveragePath]])
-                                    } catch (ignored) {
-                                        echo "Coverage plugin unavailable — archiving ${coveragePath} instead."
-                                        archiveArtifacts artifacts: coveragePath, allowEmptyArchive: true
-                                    }
+                                    // Archive the Cobertura XML as a build artifact. We
+                                    // avoid recordCoverage() here on purpose: when the
+                                    // Coverage plugin isn't installed it throws a
+                                    // java.lang.NoSuchMethodError (an Error, not an
+                                    // Exception — uncatchable in the CPS sandbox), which
+                                    // would fail the build. Once the Coverage plugin is
+                                    // installed, switch this to recordCoverage for graphs.
+                                    archiveArtifacts artifacts: coveragePath, allowEmptyArchive: true, fingerprint: false
                                 }
 
                                 if (status != 0) {
