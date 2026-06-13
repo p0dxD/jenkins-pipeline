@@ -68,6 +68,20 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                     script { integrationTestStage(pipelineManager) }
                 }
             }
+            stage('PR Build Validation') {
+                when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') != 'main' && !pipelineManager.exitEarly() } }
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }
+                }
+                steps {
+                    script { prBuildStage(pipelineManager) }
+                }
+            }
             stage('Build') {
                 when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') == 'main' && !pipelineManager.exitEarly() } }
                 agent {
