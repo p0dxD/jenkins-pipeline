@@ -69,7 +69,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Build') {
-                when { expression { !pipelineManager.exitEarly() } }
+                when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') == 'main' && !pipelineManager.exitEarly() } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
@@ -83,7 +83,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Build and Push Images') {
-                when { expression { !pipelineManager.exitEarly() } }
+                when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') == 'main' && !pipelineManager.exitEarly() } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
@@ -97,7 +97,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Bump Tags') {
-                when { expression { !pipelineManager.exitEarly() } }
+                when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') == 'main' && !pipelineManager.exitEarly() } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
@@ -136,6 +136,23 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                                      status: 'FAILURE',
                                      context: 'Jenkins CI',
                                      description: "Build #${env.BUILD_NUMBER} failed"
+                    }
+                }
+            }
+            unstable {
+                // Report-only checks (e.g. security audit) can leave the build
+                // UNSTABLE. Post SUCCESS so the commit status resolves (the
+                // blocking gates passed) instead of hanging on PENDING — and so
+                // a Renovate PR with a non-blocking advisory can still auto-merge.
+                script {
+                    if (pipelineManager.getGitCommit()) {
+                        githubNotify credentialsId: 'github-pat',
+                                     sha: pipelineManager.getGitCommit(),
+                                     account: pipelineManager.getGitAccount(),
+                                     repo: pipelineManager.getGitRepo(),
+                                     status: 'SUCCESS',
+                                     context: 'Jenkins CI',
+                                     description: "Build #${env.BUILD_NUMBER} passed (non-blocking advisories)"
                     }
                 }
             }
