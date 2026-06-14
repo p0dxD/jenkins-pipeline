@@ -6,6 +6,15 @@ def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconf
     def gitSha = scmVars.GIT_COMMIT ?: sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
     pipelineManager.setGitCommit(gitSha)
 
+    // Multibranch pipelines set BRANCH_NAME automatically; regular pipelines
+    // triggered via webhook don't. Derive it from the checkout so the
+    // branch-gating when-conditions in jenkinsMain work correctly.
+    if (!env.BRANCH_NAME) {
+        def rawBranch = scmVars.GIT_BRANCH ?: sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+        env.BRANCH_NAME = rawBranch.replaceAll(/^origin\//, '')
+        echo "Derived BRANCH_NAME: ${env.BRANCH_NAME}"
+    }
+
     def remoteUrl = sh(script: 'git remote get-url origin', returnStdout: true).trim()
     def repoPath = remoteUrl.replaceAll(/.*github\.com[:\/]/, '').replaceAll(/\.git$/, '')
     def parts = repoPath.split('/')
