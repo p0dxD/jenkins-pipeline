@@ -66,7 +66,7 @@ spec:
                                     if (blocking) {
                                         error("${projName} ${testType} failed (exit ${status})")
                                     } else {
-                                        unstable("${projName} ${testType} reported issues (exit ${status}) — non-blocking")
+                                        echo "WARNING: ${projName} ${testType} reported issues (exit ${status}) — non-blocking advisory, build continues"
                                     }
                                 }
                             }

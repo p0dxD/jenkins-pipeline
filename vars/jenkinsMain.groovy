@@ -188,21 +188,17 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             unstable {
-                // Report-only checks (e.g. security audit) can leave the build
-                // UNSTABLE. Promote the result to SUCCESS so the built-in Jenkins
-                // GitHub publisher (which fires after this block) also posts SUCCESS
-                // instead of FAILURE — otherwise it overwrites the githubNotify calls
-                // below and leaves a permanent failing status on the commit.
+                // Genuine UNSTABLE (e.g. flaky JUnit results) — post FAILURE so
+                // the commit status correctly reflects a broken build.
                 script {
-                    currentBuild.result = 'SUCCESS'
                     if (pipelineManager.getGitCommit()) {
                         def notifyArgs = [
                             credentialsId: 'github-pat',
                             sha: pipelineManager.getGitCommit(),
                             account: pipelineManager.getGitAccount(),
                             repo: pipelineManager.getGitRepo(),
-                            status: 'SUCCESS',
-                            description: "Build #${env.BUILD_NUMBER} passed (non-blocking advisories)",
+                            status: 'FAILURE',
+                            description: "Build #${env.BUILD_NUMBER} unstable",
                         ]
                         githubNotify(notifyArgs + [context: 'Jenkins CI'])
                         githubNotify(notifyArgs + [context: 'continuous-integration/jenkins/pr-head'])
