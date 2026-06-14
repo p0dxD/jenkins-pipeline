@@ -1,6 +1,6 @@
 import space.joserod.pipeline.PipelineManager
 
-// Triggers an Expo EAS cloud build for every project with type: mobile.
+// Triggers Expo EAS cloud builds for every project with type: mobile.
 // Requires EXPO_TOKEN credential (Secret Text) with ID 'eas-token'.
 def call(PipelineManager pipelineManager) {
     def mobileProjects = pipelineManager.getProjectConfigurations().getProjectsConfigs()
@@ -15,7 +15,7 @@ def call(PipelineManager pipelineManager) {
     mobileProjects.each { k, v ->
         def projectName = v.values.name
         def projectPath = v.values.path ?: '.'
-        def platform   = v.values.stages?.mobile?.platform ?: 'android'
+        def platform   = v.values.stages?.mobile?.platform ?: 'all'
         def profile    = v.values.stages?.mobile?.profile   ?: 'production'
         def stashName  = projectName.replace('/', '_')
 
@@ -50,14 +50,21 @@ spec:
                                     ).trim()
 
                                     def buildJson = readJSON text: buildOutput
-                                    def artifactUrl = buildJson[0]?.artifacts?.buildUrl ?: buildJson?.artifacts?.buildUrl
+                                    def builds_list = buildJson instanceof List ? buildJson : [buildJson]
 
-                                    if (artifactUrl) {
-                                        sh "wget -q -O jobsentry-android.aab '${artifactUrl}'"
-                                        archiveArtifacts artifacts: 'jobsentry-android.aab', fingerprint: true
-                                        echo "Android AAB archived: jobsentry-android.aab"
-                                    } else {
-                                        echo "EAS build submitted — artifact URL not available yet (async build). Check expo.dev for status."
+                                    builds_list.each { build ->
+                                        def artifactUrl = build?.artifacts?.buildUrl
+                                        def buildPlatform = build?.platform?.toLowerCase() ?: 'unknown'
+
+                                        if (artifactUrl) {
+                                            def ext = buildPlatform == 'ios' ? 'ipa' : 'aab'
+                                            def filename = "jobsentry-${buildPlatform}.${ext}"
+                                            sh "wget -q -O '${filename}' '${artifactUrl}'"
+                                            archiveArtifacts artifacts: filename, fingerprint: true
+                                            echo "Archived ${filename}"
+                                        } else {
+                                            echo "EAS ${buildPlatform} build submitted (async) — check expo.dev for artifact."
+                                        }
                                     }
                                 }
                             }
