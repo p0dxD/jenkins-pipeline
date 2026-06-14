@@ -189,10 +189,12 @@ def call(String configPath = 'jenkinsconfig.yaml') {
             }
             unstable {
                 // Report-only checks (e.g. security audit) can leave the build
-                // UNSTABLE. Post SUCCESS so the commit status resolves (the
-                // blocking gates passed) instead of hanging on PENDING — and so
-                // a Renovate PR with a non-blocking advisory can still auto-merge.
+                // UNSTABLE. Promote the result to SUCCESS so the built-in Jenkins
+                // GitHub publisher (which fires after this block) also posts SUCCESS
+                // instead of FAILURE — otherwise it overwrites the githubNotify calls
+                // below and leaves a permanent failing status on the commit.
                 script {
+                    currentBuild.result = 'SUCCESS'
                     if (pipelineManager.getGitCommit()) {
                         def notifyArgs = [
                             credentialsId: 'github-pat',
