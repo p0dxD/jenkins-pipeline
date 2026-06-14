@@ -41,7 +41,7 @@ spec:
                                       --frontend dockerfile.v0 \\
                                       --local context=. \\
                                       --local dockerfile=. \\
-                                      --output type=cacheonly \\
+                                      --output type=tar,dest=/dev/null \\
                                       ${buildArgFlags}
                                 """
                             }
