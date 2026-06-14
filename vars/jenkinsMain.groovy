@@ -110,6 +110,20 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                     script { createImageStage(pipelineManager) }
                 }
             }
+            stage('Mobile Build') {
+                when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') == 'main' && !pipelineManager.exitEarly() } }
+                agent {
+                    kubernetes {
+                        cloud 'kubernetes'
+                        inheritFrom 'kube-agent'
+                        slaveConnectTimeout 300
+                        idleMinutes 5
+                    }
+                }
+                steps {
+                    script { mobileBuildStage(pipelineManager) }
+                }
+            }
             stage('Bump Tags') {
                 when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') == 'main' && !pipelineManager.exitEarly() } }
                 agent {

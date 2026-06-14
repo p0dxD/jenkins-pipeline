@@ -6,7 +6,7 @@ def call(PipelineManager pipelineManager) {
     def projects = [:]
 
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each { k, v ->
-        if (v.values.type == 'fission') return
+        if (v.values.type == 'fission' || v.values.type == 'mobile') return
         if (v.values.stages?.build?.tool == 'none') return
 
         def projectName = v.values.name

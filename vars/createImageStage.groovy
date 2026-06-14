@@ -5,7 +5,7 @@ def call(PipelineManager pipelineManager) {
     def buildTag = pipelineManager.getBuildTag()
 
     pipelineManager.getProjectConfigurations().getProjectsConfigs().each { k, v ->
-        if (v.values.type == 'fission') return
+        if (v.values.type == 'fission' || v.values.type == 'mobile') return
 
         def projectName = v.values.name
         def image = v.values.image
