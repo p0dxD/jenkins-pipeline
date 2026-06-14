@@ -21,13 +21,16 @@ def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconf
     pipelineManager.setGitAccount(parts[0])
     pipelineManager.setGitRepo(parts[1])
 
-    githubNotify credentialsId: 'github-pat',
-                 sha: gitSha,
-                 account: parts[0],
-                 repo: parts[1],
-                 status: 'PENDING',
-                 context: 'Jenkins CI',
-                 description: 'Build in progress'
+    def pendingArgs = [
+        credentialsId: 'github-pat',
+        sha: gitSha,
+        account: parts[0],
+        repo: parts[1],
+        status: 'PENDING',
+        description: 'Build in progress',
+    ]
+    githubNotify(pendingArgs + [context: 'Jenkins CI'])
+    githubNotify(pendingArgs + [context: 'continuous-integration/jenkins/pr-head'])
 
     // Skip pipeline for commits made by the pipeline itself
     def commitMsg = sh(script: 'git log -1 --pretty=%B', returnStdout: true).trim()

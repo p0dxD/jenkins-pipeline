@@ -157,13 +157,16 @@ def call(String configPath = 'jenkinsconfig.yaml') {
             success {
                 script {
                     if (pipelineManager.getGitCommit()) {
-                        githubNotify credentialsId: 'github-pat',
-                                     sha: pipelineManager.getGitCommit(),
-                                     account: pipelineManager.getGitAccount(),
-                                     repo: pipelineManager.getGitRepo(),
-                                     status: 'SUCCESS',
-                                     context: 'Jenkins CI',
-                                     description: "Build #${env.BUILD_NUMBER} passed"
+                        def notifyArgs = [
+                            credentialsId: 'github-pat',
+                            sha: pipelineManager.getGitCommit(),
+                            account: pipelineManager.getGitAccount(),
+                            repo: pipelineManager.getGitRepo(),
+                            status: 'SUCCESS',
+                            description: "Build #${env.BUILD_NUMBER} passed",
+                        ]
+                        githubNotify(notifyArgs + [context: 'Jenkins CI'])
+                        githubNotify(notifyArgs + [context: 'continuous-integration/jenkins/pr-head'])
                     }
                 }
                 echo "Pipeline completed. Build tag: ${pipelineManager.getBuildTag() ?: 'n/a'}"
@@ -171,13 +174,16 @@ def call(String configPath = 'jenkinsconfig.yaml') {
             failure {
                 script {
                     if (pipelineManager.getGitCommit()) {
-                        githubNotify credentialsId: 'github-pat',
-                                     sha: pipelineManager.getGitCommit(),
-                                     account: pipelineManager.getGitAccount(),
-                                     repo: pipelineManager.getGitRepo(),
-                                     status: 'FAILURE',
-                                     context: 'Jenkins CI',
-                                     description: "Build #${env.BUILD_NUMBER} failed"
+                        def notifyArgs = [
+                            credentialsId: 'github-pat',
+                            sha: pipelineManager.getGitCommit(),
+                            account: pipelineManager.getGitAccount(),
+                            repo: pipelineManager.getGitRepo(),
+                            status: 'FAILURE',
+                            description: "Build #${env.BUILD_NUMBER} failed",
+                        ]
+                        githubNotify(notifyArgs + [context: 'Jenkins CI'])
+                        githubNotify(notifyArgs + [context: 'continuous-integration/jenkins/pr-head'])
                     }
                 }
             }
@@ -188,13 +194,16 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 // a Renovate PR with a non-blocking advisory can still auto-merge.
                 script {
                     if (pipelineManager.getGitCommit()) {
-                        githubNotify credentialsId: 'github-pat',
-                                     sha: pipelineManager.getGitCommit(),
-                                     account: pipelineManager.getGitAccount(),
-                                     repo: pipelineManager.getGitRepo(),
-                                     status: 'SUCCESS',
-                                     context: 'Jenkins CI',
-                                     description: "Build #${env.BUILD_NUMBER} passed (non-blocking advisories)"
+                        def notifyArgs = [
+                            credentialsId: 'github-pat',
+                            sha: pipelineManager.getGitCommit(),
+                            account: pipelineManager.getGitAccount(),
+                            repo: pipelineManager.getGitRepo(),
+                            status: 'SUCCESS',
+                            description: "Build #${env.BUILD_NUMBER} passed (non-blocking advisories)",
+                        ]
+                        githubNotify(notifyArgs + [context: 'Jenkins CI'])
+                        githubNotify(notifyArgs + [context: 'continuous-integration/jenkins/pr-head'])
                     }
                 }
             }
