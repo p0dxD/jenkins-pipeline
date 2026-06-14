@@ -40,33 +40,41 @@ spec:
                             cleanBeforeCheckout()
                             unstash stashName
 
-                            withCredentials([string(credentialsId: 'eas-token', variable: 'EXPO_TOKEN')]) {
-                                dir(projectPath) {
-                                    sh 'npm install -g eas-cli --quiet'
+                            try {
+                                withCredentials([string(credentialsId: 'eas-token', variable: 'EXPO_TOKEN')]) {
+                                    dir(projectPath) {
+                                        sh 'npm install -g eas-cli --quiet'
 
-                                    def buildOutput = sh(
-                                        script: "eas build --platform ${platform} --profile ${profile} --non-interactive --json 2>/dev/null",
-                                        returnStdout: true
-                                    ).trim()
+                                        def buildOutput = sh(
+                                            script: "eas build --platform ${platform} --profile ${profile} --non-interactive --json 2>/dev/null",
+                                            returnStdout: true
+                                        ).trim()
 
-                                    def buildJson = readJSON text: buildOutput
-                                    def builds_list = buildJson instanceof List ? buildJson : [buildJson]
+                                        def buildJson = readJSON text: buildOutput
+                                        def builds_list = buildJson instanceof List ? buildJson : [buildJson]
 
-                                    builds_list.each { build ->
-                                        def artifactUrl = build?.artifacts?.buildUrl
-                                        def buildPlatform = build?.platform?.toLowerCase() ?: 'unknown'
+                                        builds_list.each { build ->
+                                            def artifactUrl = build?.artifacts?.buildUrl
+                                            def buildPlatform = build?.platform?.toLowerCase() ?: 'unknown'
 
-                                        if (artifactUrl) {
-                                            def ext = buildPlatform == 'ios' ? 'ipa' : 'aab'
-                                            def filename = "jobsentry-${buildPlatform}.${ext}"
-                                            sh "wget -q -O '${filename}' '${artifactUrl}'"
-                                            archiveArtifacts artifacts: filename, fingerprint: true
-                                            echo "Archived ${filename}"
-                                        } else {
-                                            echo "EAS ${buildPlatform} build submitted (async) — check expo.dev for artifact."
+                                            if (artifactUrl) {
+                                                def ext = buildPlatform == 'ios' ? 'ipa' : 'aab'
+                                                def filename = "stockfinancia-${buildPlatform}.${ext}"
+                                                sh "wget -q -O '${filename}' '${artifactUrl}'"
+                                                archiveArtifacts artifacts: filename, fingerprint: true
+                                                echo "Archived ${filename}"
+                                            } else {
+                                                echo "EAS ${buildPlatform} build submitted (async) — check expo.dev for artifact."
+                                            }
                                         }
                                     }
                                 }
+                            } catch (e) {
+                                if (e.message?.contains('Could not find credentials')) {
+                                    echo "Skipping Mobile Build: EAS credentials not configured yet (${e.message}). Add 'eas-token' to Jenkins to enable."
+                                    return
+                                }
+                                throw e
                             }
                         }
                     }
