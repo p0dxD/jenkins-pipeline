@@ -111,7 +111,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Mobile Build') {
-                when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') == 'main' && !pipelineManager.exitEarly() } }
+                when { beforeAgent true; expression { false } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
@@ -125,7 +125,7 @@ def call(String configPath = 'jenkinsconfig.yaml') {
                 }
             }
             stage('Mobile Publish') {
-                when { beforeAgent true; expression { (env.BRANCH_NAME ?: 'main') == 'main' && !pipelineManager.exitEarly() } }
+                when { beforeAgent true; expression { false } }
                 agent {
                     kubernetes {
                         cloud 'kubernetes'
