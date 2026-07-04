@@ -5,6 +5,7 @@ def call(final PipelineManager pipelineManager, String configPath = 'jenkinsconf
     def scmVars = checkout scm
     def gitSha = scmVars.GIT_COMMIT ?: sh(script: 'git rev-parse HEAD', returnStdout: true).trim()
     pipelineManager.setGitCommit(gitSha)
+    env.GIT_PREVIOUS_SUCCESSFUL_COMMIT = scmVars.GIT_PREVIOUS_SUCCESSFUL_COMMIT ?: ''
 
     // Multibranch pipelines set BRANCH_NAME automatically; regular pipelines
     // triggered via webhook don't. Derive it from the checkout so the
@@ -102,16 +103,43 @@ private String computeNextTag(PipelineManager pipelineManager) {
     }
 }
 
+// Files changed since the last successfully built commit. Diffing only
+// HEAD^..HEAD misses earlier commits of a multi-commit push, silently
+// skipping image builds for services those commits touched. Falls back to
+// HEAD^ when Jenkins has no previous build or the commit was rewritten away,
+// and to "everything changed" (null) on a repo's very first commit.
+private List<String> getChangedFiles() {
+    def baseline = env.GIT_PREVIOUS_SUCCESSFUL_COMMIT
+    if (!baseline || sh(script: "git cat-file -e ${baseline}^'{commit}' 2>/dev/null", returnStatus: true) != 0) {
+        baseline = sh(script: 'git rev-parse --verify -q HEAD^ || true', returnStdout: true).trim()
+    }
+    if (!baseline) {
+        echo 'No baseline commit found — treating all projects as changed'
+        return null
+    }
+    echo "Detecting changes against baseline ${baseline}"
+    def out = sh(script: "git diff --name-only ${baseline} HEAD", returnStdout: true).trim()
+    return out ? out.split('\n') as List : []
+}
+
 private void fillConfiguration(final PipelineManager pipelineManager, String configPath) {
     def configuration = readYaml file: configPath
     def isTriggeredByUser = currentBuild.getBuildCauses('hudson.model.Cause$UserIdCause').size() > 0
+    def changedFiles = getChangedFiles()
 
     for (def project : configuration.projects) {
         def projectPath = project.path ?: '.'
-        String changesCmd = "if [ '${projectPath}' != '.' ] && [ -z \"\$(git diff HEAD^ HEAD --name-only | grep '${projectPath}')\" ]; then echo 'Empty'; else echo 'Has changes.'; fi"
-        String changesOutput = sh(script: changesCmd, returnStdout: true).trim()
+        def hasChanges = (projectPath == '.') || (changedFiles == null)
+        if (!hasChanges) {
+            for (def file : changedFiles) {
+                if (file == projectPath || file.startsWith(projectPath + '/')) {
+                    hasChanges = true
+                    break
+                }
+            }
+        }
 
-        if (changesOutput.equalsIgnoreCase('Has changes.') || isTriggeredByUser) {
+        if (hasChanges || isTriggeredByUser) {
             pipelineManager.getProjectConfigurations().addProject(project.name, project)
             echo "Queued for build: ${project.name}"
         } else {
